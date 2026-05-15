@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delivery Driver Attendance summary</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Sora:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0B1437;
+  --navy2: #111C4E;
+  --navy3: #172260;
+  --blue: #2563EB;
+  --blue-light: #3B82F6;
+  --blue-pale: #EFF6FF;
+  --teal: #0D9488;
+  --teal-light: #14B8A6;
+  --teal-pale: #F0FDFA;
+  --amber: #D97706;
+  --amber-light: #F59E0B;
+  --amber-pale: #FFFBEB;
+  --rose: #E11D48;
+  --rose-pale: #FFF1F2;
+  --green: #16A34A;
+  --green-pale: #F0FDF4;
+  --purple: #7C3AED;
+  --purple-pale: #F5F3FF;
+  --white: #FFFFFF;
+  --gray50: #F8FAFC;
+  --gray100: #F1F5F9;
+  --gray200: #E2E8F0;
+  --gray300: #CBD5E1;
+  --gray400: #94A3B8;
+  --gray600: #475569;
+  --gray700: #334155;
+  --gray800: #1E293B;
+  --gray900: #0F172A;
+  --text: #1E293B;
+  --text-muted: #64748B;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-xl: 20px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.10), 0 16px 40px rgba(0,0,0,0.08);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--gray50);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--gray100); }
+::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 3px; }
+
+/* ── NAVBAR ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--gray200);
+  padding: 0 2.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+.nav-brand {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Sora', sans-serif; font-weight: 700; font-size: 1.1rem;
+  color: var(--navy);
+}
+.nav-logo-box {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--blue), var(--navy2));
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 1rem;
+}
+.nav-links { display: flex; gap: 0.25rem; list-style: none; }
+.nav-links a {
+  font-size: 0.82rem; font-weight: 500; color: var(--gray600);
+  text-decoration: none; padding: 0.4rem 0.85rem; border-radius: 6px;
+  transition: all 0.2s;
+}
+.nav-links a:hover { background: var(--blue-pale); color: var(--blue); }
+
+/* ── HERO ── */
+.hero {
+  background: linear-gradient(160deg, var(--navy) 0%, var(--navy2) 40%, #1a2d7a 100%);
+  color: white;
+  padding: 6rem 2.5rem 0;
+  position: relative; overflow: hidden;
+  min-height: 88vh;
+  display: flex; flex-direction: column; align-items: center;
+}
+
+.hero-bg-shapes {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+}
+
+.shape {
+  position: absolute; border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+}
+.s1 { width: 600px; height: 600px; top: -200px; right: -150px; }
+.s2 { width: 400px; height: 400px; bottom: 50px; left: -100px; background: rgba(37,99,235,0.15); }
+.s3 { width: 200px; height: 200px; top: 30%; right: 15%; background: rgba(14,184,168,0.1); }
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 100px;
+  padding: 0.4rem 1.1rem;
+  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.5px;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 2rem;
+  animation: fadeUp 0.8s ease both;
+}
+.eyebrow-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #34D399; animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.3)} }
+
+.hero h1 {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  line-height: 1.1; text-align: center;
+  max-width: 800px;
+  animation: fadeUp 0.8s 0.1s ease both;
+  margin-bottom: 1.5rem;
+}
+.hero h1 .accent { color: #60A5FA; }
+.hero h1 .accent2 { color: #34D399; }
+
+.hero-sub {
+  font-size: 1.1rem; color: rgba(255,255,255,0.65); font-weight: 300;
+  text-align: center; max-width: 580px; line-height: 1.8;
+  animation: fadeUp 0.8s 0.2s ease both;
+  margin-bottom: 3rem;
+}
+
+/* HERO STATS BAR */
+.hero-stats {
+  display: flex; gap: 0;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--radius);
+  overflow: hidden;
+  animation: fadeUp 0.8s 0.3s ease both;
+  margin-bottom: 4rem;
+}
+.hero-stat {
+  padding: 1.25rem 2.5rem;
+  text-align: center;
+  border-right: 1px solid rgba(255,255,255,0.1);
+}
+.hero-stat:last-child { border-right: none; }
+.stat-num {
+  font-family: 'Sora', sans-serif; font-size: 2rem; font-weight: 800;
+  color: #60A5FA; line-height: 1;
+}
+.stat-label { font-size: 0.78rem; color: rgba(255,255,255,0.5); margin-top: 4px; font-weight: 400; }
+
+/* HERO ILLUSTRATION SVG AREA */
+.hero-illustration {
+  width: 100%; max-width: 900px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-bottom: none;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  padding: 2rem;
+  animation: fadeUp 0.8s 0.4s ease both;
+}
+
+/* MODULE FLOW IN HERO */
+.module-flow {
+  display: flex; gap: 1rem; align-items: center; justify-content: center; flex-wrap: wrap;
+}
+.mf-node {
+  background: rgba(255,255,255,0.09);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px; padding: 0.75rem 1.1rem;
+  display: flex; align-items: center; gap: 0.6rem;
+  transition: all 0.3s; cursor: default;
+}
+.mf-node:hover { background: rgba(255,255,255,0.15); transform: translateY(-2px); }
+.mf-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; font-size: 1rem;
+  flex-shrink: 0;
+}
+.mf-text { display: flex; flex-direction: column; }
+.mf-num { font-size: 0.62rem; color: rgba(255,255,255,0.45); font-family: 'JetBrains Mono', monospace; }
+.mf-name { font-size: 0.8rem; font-weight: 600; color: rgba(255,255,255,0.9); }
+.mf-arrow { color: rgba(255,255,255,0.25); font-size: 1.2rem; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── SECTION BASE ── */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+section { padding: 5rem 0; }
+section:nth-child(even) { background: white; }
+
+.section-label {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 500;
+  color: var(--blue); letter-spacing: 0.5px;
+  background: var(--blue-pale); border: 1px solid #BFDBFE;
+  border-radius: 100px; padding: 0.3rem 0.85rem;
+  margin-bottom: 1rem;
+}
+.section-label .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--blue); }
+
+h2.section-title {
+  font-family: 'Sora', sans-serif; font-weight: 800;
+  font-size: clamp(1.6rem, 3vw, 2.4rem); color: var(--navy);
+  line-height: 1.2; margin-bottom: 0.75rem;
+}
+.section-desc {
+  font-size: 1.05rem; color: var(--text-muted); font-weight: 400;
+  max-width: 560px; line-height: 1.75;
+}
+
+/* ── CARDS ── */
+.card {
+  background: white; border-radius: var(--radius);
+  border: 1px solid var(--gray200); padding: 1.5rem;
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+  opacity: 0; transform: translateY(20px);
+}
+.card.visible { opacity: 1; transform: translateY(0); }
+.card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); border-color: var(--gray300); }
+
+.card-header { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.25rem; }
+.card-icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; flex-shrink: 0;
+}
+.icon-blue { background: #EFF6FF; }
+.icon-teal { background: #F0FDFA; }
+.icon-amber { background: #FFFBEB; }
+.icon-rose { background: #FFF1F2; }
+.icon-purple { background: #F5F3FF; }
+.icon-green { background: #F0FDF4; }
+
+.card-title {
+  font-family: 'Sora', sans-serif; font-weight: 700; font-size: 1rem; color: var(--navy);
+  line-height: 1.3; margin-bottom: 0.2rem;
+}
+.card-sub { font-size: 0.8rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+
+.card p, .card-body { font-size: 0.92rem; color: var(--gray600); line-height: 1.75; }
+
+/* ── GRIDS ── */
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+
+/* ── STATUS BADGES ── */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 0.22rem 0.7rem; border-radius: 100px;
+  font-size: 0.75rem; font-weight: 600;
+}
+.badge::before { content:''; width:5px; height:5px; border-radius:50%; }
+.badge-green { background: #DCFCE7; color: #15803D; }
+.badge-green::before { background: #22C55E; }
+.badge-red { background: #FEE2E2; color: #DC2626; }
+.badge-red::before { background: #EF4444; }
+.badge-blue { background: #DBEAFE; color: #1D4ED8; }
+.badge-amber { background: #FEF3C7; color: #B45309; }
+.badge-purple { background: #EDE9FE; color: #6D28D9; }
+
+/* ── STATUS TABLE ── */
+.status-table-wrap {
+  border-radius: var(--radius); border: 1px solid var(--gray200);
+  overflow: hidden; box-shadow: var(--shadow);
+}
+table.st {
+  width: 100%; border-collapse: collapse;
+  font-size: 0.87rem;
+}
+table.st thead { background: var(--navy); }
+table.st th {
+  padding: 0.85rem 1.1rem; text-align: left;
+  font-size: 0.72rem; font-weight: 600; letter-spacing: 0.5px;
+  text-transform: uppercase; color: rgba(255,255,255,0.7);
+  font-family: 'JetBrains Mono', monospace;
+}
+table.st td { padding: 0.75rem 1.1rem; color: var(--gray700); border-bottom: 1px solid var(--gray100); }
+table.st tr:last-child td { border-bottom: none; }
+table.st tr:hover td { background: var(--gray50); }
+table.st td:first-child { font-family: 'JetBrains Mono', monospace; color: var(--text-muted); font-size: 0.8rem; }
+
+/* ── INFO BOX ── */
+.info-box {
+  border-radius: var(--radius-sm); padding: 1rem 1.25rem;
+  margin: 1rem 0; display: flex; gap: 0.75rem;
+}
+.info-box-blue { background: #EFF6FF; border-left: 3px solid var(--blue); }
+.info-box-amber { background: #FFFBEB; border-left: 3px solid var(--amber); }
+.info-box-green { background: #F0FDF4; border-left: 3px solid var(--green); }
+.info-box-rose { background: #FFF1F2; border-left: 3px solid var(--rose); }
+.info-box-purple { background: #F5F3FF; border-left: 3px solid var(--purple); }
+.info-box-teal { background: #F0FDFA; border-left: 3px solid var(--teal); }
+.ib-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+.ib-content { display: flex; flex-direction: column; gap: 0.25rem; }
+.ib-label { font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; font-family: 'JetBrains Mono', monospace; }
+.ib-blue .ib-label { color: var(--blue); }
+.ib-amber .ib-label { color: var(--amber); }
+.ib-green .ib-label { color: var(--green); }
+.ib-rose .ib-label { color: var(--rose); }
+.ib-purple .ib-label { color: var(--purple); }
+.ib-teal .ib-label { color: var(--teal); }
+.ib-body { font-size: 0.87rem; color: var(--gray700); line-height: 1.7; }
+
+/* ── FLOW NODES ── */
+.flow-wrap { display: flex; align-items: center; gap: 0; flex-wrap: wrap; justify-content: center; margin: 2.5rem 0; }
+.flow-step {
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  min-width: 130px;
+}
+.flow-circle {
+  width: 60px; height: 60px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  box-shadow: 0 0 0 6px var(--gray100);
+  transition: all 0.3s;
+}
+.flow-circle:hover { transform: scale(1.1); box-shadow: 0 0 0 6px var(--blue-pale); }
+.flow-step-num { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--text-muted); }
+.flow-step-label { font-size: 0.82rem; font-weight: 600; color: var(--navy); text-align: center; line-height: 1.3; }
+.flow-step-badge { font-size: 0.7rem; }
+.flow-connector {
+  flex: 1; height: 2px; min-width: 30px;
+  background: linear-gradient(to right, var(--blue), var(--teal-light));
+  position: relative; margin-bottom: 28px;
+}
+.flow-connector::after {
+  content: '▶'; position: absolute; right: -5px; top: 50%;
+  transform: translateY(-50%); color: var(--teal); font-size: 0.6rem;
+}
+
+/* fc1 = blue, fc2 = teal, fc3 = amber, fc4 = rose, fc5 = green */
+.fc1 { background: #DBEAFE; }
+.fc2 { background: #CCFBF1; }
+.fc3 { background: #FEF3C7; }
+.fc4 { background: #FEE2E2; }
+.fc5 { background: #DCFCE7; }
+.fc6 { background: #EDE9FE; }
+
+/* ── KM CARDS ── */
+.km-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem; }
+.km-card {
+  border-radius: var(--radius-sm); padding: 1.25rem; text-align: center;
+  border: 1px solid var(--gray200); background: white;
+  position: relative; overflow: hidden;
+}
+.km-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.km-1::before { background: linear-gradient(to right, #60A5FA, #3B82F6); }
+.km-2::before { background: linear-gradient(to right, #34D399, #0D9488); }
+.km-3::before { background: linear-gradient(to right, #FBBF24, #D97706); }
+.km-range { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 1.1rem; color: var(--navy); margin-bottom: 4px; }
+.km-rest { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; }
+.km-result { font-size: 0.78rem; font-weight: 600; color: var(--green); background: var(--green-pale); padding: 0.2rem 0.6rem; border-radius: 100px; display: inline-block; }
+
+/* ── TIMELINE ── */
+.timeline { position: relative; padding: 1rem 0; }
+.timeline::before {
+  content: ''; position: absolute; left: 28px; top: 0; bottom: 0; width: 2px;
+  background: linear-gradient(to bottom, var(--blue), var(--teal), var(--amber));
+  border-radius: 1px;
+}
+.tl-item {
+  display: flex; gap: 1.5rem; margin-bottom: 2rem; padding-left: 0;
+  opacity: 0; transform: translateX(-20px);
+  transition: all 0.5s ease;
+}
+.tl-item.visible { opacity: 1; transform: translateX(0); }
+.tl-dot {
+  width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; position: relative; z-index: 1;
+  box-shadow: 0 0 0 4px var(--gray50);
+  border: 2px solid transparent;
+}
+.tl-content {
+  flex: 1; background: white; border-radius: var(--radius);
+  border: 1px solid var(--gray200); padding: 1.25rem;
+  box-shadow: var(--shadow);
+}
+.tl-title { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 0.95rem; color: var(--navy); margin-bottom: 0.5rem; }
+.tl-body { font-size: 0.88rem; color: var(--gray600); line-height: 1.7; }
+.tl-tag {
+  display: inline-block; margin-top: 0.5rem;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+  color: var(--text-muted); background: var(--gray100);
+  padding: 0.2rem 0.6rem; border-radius: 4px;
+}
+
+/* ── DB TABLE VISUAL ── */
+.db-flow { display: flex; align-items: flex-start; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+.db-card {
+  border-radius: var(--radius); border: 1px solid var(--gray200);
+  overflow: hidden; background: white; min-width: 185px;
+  box-shadow: var(--shadow); transition: all 0.3s;
+}
+.db-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.db-head {
+  padding: 0.65rem 1rem; font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem; font-weight: 500; letter-spacing: 0.3px;
+  border-bottom: 1px solid var(--gray200);
+}
+.db-head-blue { background: #1D4ED8; color: white; }
+.db-head-teal { background: #0F766E; color: white; }
+.db-head-amber { background: #B45309; color: white; }
+.db-head-green { background: #15803D; color: white; }
+.db-row-item { padding: 0.45rem 1rem; font-size: 0.78rem; color: var(--gray600); border-bottom: 1px solid var(--gray100); font-family: 'JetBrains Mono', monospace; }
+.db-row-item:last-child { border-bottom: none; }
+.db-arrow-wrap { display: flex; align-items: center; color: var(--blue); font-size: 1.3rem; padding-top: 1.5rem; }
+
+/* ── JOB CARDS ── */
+.job-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; }
+.job-card {
+  background: white; border-radius: var(--radius); border: 1px solid var(--gray200);
+  padding: 1.25rem; box-shadow: var(--shadow); transition: all 0.3s;
+  opacity: 0; transform: translateY(16px);
+  display: flex; flex-direction: column; gap: 0.75rem;
+}
+.job-card.visible { opacity: 1; transform: translateY(0); }
+.job-card:hover { box-shadow: var(--shadow-md); border-color: var(--blue); }
+.job-name {
+  font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+  color: var(--blue); word-break: break-all;
+  background: var(--blue-pale); padding: 0.35rem 0.7rem;
+  border-radius: 6px;
+}
+.job-meta { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.job-pill {
+  font-size: 0.72rem; padding: 0.2rem 0.65rem;
+  border-radius: 100px; font-weight: 500;
+}
+.jp-freq { background: var(--teal-pale); color: var(--teal); }
+.jp-time { background: var(--amber-pale); color: var(--amber); }
+.jp-type { background: var(--purple-pale); color: var(--purple); }
+.job-desc { font-size: 0.87rem; color: var(--gray600); line-height: 1.7; }
+
+/* ── VEHICLE STEPS ── */
+.vehicle-flow { display: flex; align-items: flex-start; gap: 0; flex-wrap: wrap; justify-content: center; }
+.vs-step {
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  min-width: 140px; max-width: 160px; padding: 1.25rem 1rem;
+  background: white; border: 1px solid var(--gray200); border-radius: var(--radius);
+  text-align: center; transition: all 0.3s; box-shadow: var(--shadow);
+  opacity: 0; transform: scale(0.95);
+  transition: opacity 0.4s, transform 0.4s, box-shadow 0.3s, border-color 0.3s;
+  cursor: default;
+}
+.vs-step.visible { opacity: 1; transform: scale(1); }
+.vs-step:hover { box-shadow: var(--shadow-md); border-color: var(--amber); transform: scale(1.04); }
+.vs-icon { font-size: 2rem; }
+.vs-num { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--text-muted); }
+.vs-title { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 0.82rem; color: var(--navy); line-height: 1.3; }
+.vs-desc { font-size: 0.75rem; color: var(--text-muted); line-height: 1.5; }
+.vs-arrow { color: var(--amber-light); font-size: 1.5rem; margin-bottom: 24px; padding: 0 0.25rem; }
+
+/* ── COMP OFF CARDS ── */
+.co-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; }
+.co-card {
+  border-radius: var(--radius); border: 1px solid var(--gray200);
+  background: white; overflow: hidden; box-shadow: var(--shadow);
+  transition: all 0.3s;
+  opacity: 0; transform: translateY(20px);
+}
+.co-card.visible { opacity: 1; transform: translateY(0); }
+.co-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
+.co-header {
+  padding: 1rem 1.25rem; display: flex; align-items: center; gap: 0.75rem;
+}
+.co-letter-badge {
+  width: 36px; height: 36px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Sora', sans-serif; font-weight: 800; font-size: 1rem; color: white;
+}
+.co-title-wrap { display: flex; flex-direction: column; }
+.co-letter-title { font-size: 0.62rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+.co-main-title { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 0.9rem; color: var(--navy); }
+.co-body { padding: 0 1.25rem 1.25rem; font-size: 0.86rem; color: var(--gray600); line-height: 1.75; }
+.co-trigger {
+  margin: 0 1.25rem 1.25rem;
+  background: var(--gray50); border: 1px solid var(--gray200);
+  border-radius: 6px; padding: 0.45rem 0.75rem;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-muted);
+  display: flex; align-items: center; gap: 6px;
+}
+
+/* ── OPS CARDS ── */
+.ops-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.25rem; }
+.ops-card {
+  background: white; border-radius: var(--radius); border: 1px solid var(--gray200);
+  padding: 1.5rem; box-shadow: var(--shadow); transition: all 0.3s;
+  opacity: 0; transform: scale(0.96);
+}
+.ops-card.visible { opacity: 1; transform: scale(1); }
+.ops-card:hover { box-shadow: var(--shadow-md); border-color: var(--teal); transform: translateY(-2px); }
+.ops-icon { font-size: 1.75rem; margin-bottom: 0.75rem; }
+.ops-title { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 0.9rem; color: var(--navy); margin-bottom: 0.4rem; }
+.ops-api { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--teal); margin-bottom: 0.6rem; }
+.ops-desc { font-size: 0.85rem; color: var(--gray600); line-height: 1.65; }
+
+/* ── RESTRICTION BANNER ── */
+.restriction {
+  background: #FFF1F2; border: 1px solid #FECDD3;
+  border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-top: 1.5rem;
+  display: flex; gap: 1rem; align-items: flex-start;
+}
+.restr-icon { font-size: 1.5rem; flex-shrink: 0; }
+.restr-title { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 0.9rem; color: #9F1239; margin-bottom: 0.6rem; }
+.restr-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.restr-pill { background: #FEE2E2; color: #DC2626; border: 1px solid #FECACA; border-radius: 100px; padding: 0.25rem 0.75rem; font-size: 0.78rem; font-weight: 600; }
+
+/* ── LEGEND ── */
+.legend-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+.legend-item {
+  display: flex; align-items: flex-start; gap: 0.75rem;
+  background: white; border: 1px solid var(--gray200); border-radius: var(--radius-sm);
+  padding: 1rem;
+}
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.legend-text { font-size: 0.87rem; color: var(--gray700); line-height: 1.5; }
+.legend-label { font-weight: 600; color: var(--navy); display: block; margin-bottom: 2px; }
+
+/* ── SECTION DIVIDER ── */
+.divider { height: 1px; background: linear-gradient(to right, transparent, var(--gray200) 30%, var(--gray200) 70%, transparent); margin: 0; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--navy); color: rgba(255,255,255,0.7);
+  padding: 4rem 2rem; text-align: center;
+}
+.footer-brand {
+  font-family: 'Sora', sans-serif; font-weight: 800; font-size: 1.5rem;
+  color: white; margin-bottom: 0.5rem;
+}
+.footer-sub { font-size: 0.85rem; margin-bottom: 1.5rem; }
+.footer-tags { display: flex; gap: 0.75rem; flex-wrap: wrap; justify-content: center; }
+.footer-tag {
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 100px; padding: 0.3rem 0.9rem; font-size: 0.75rem;
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px) {
+  nav { padding: 0 1rem; }
+  .nav-links { display: none; }
+  .hero { padding: 4rem 1.5rem 0; }
+  .hero-stats { flex-direction: column; }
+  .hero-stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .km-grid { grid-template-columns: 1fr; }
+  .module-flow { flex-direction: column; align-items: center; }
+  .vehicle-flow { flex-direction: column; align-items: center; }
+  .flow-wrap { flex-direction: column; }
+}
+
+/* ANIMATIONS */
+@keyframes stagger {
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:translateY(0)}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-logo-box">🚛</div>
+    DFMS
+  </div>
+  <ul class="nav-links">
+    <li><a href="#sec-attendance">Attendance</a></li>
+    <li><a href="#sec-trip">Trip Flow</a></li>
+    <li><a href="#sec-leave">Leave</a></li>
+    <li><a href="#sec-compoff">Comp Off</a></li>
+    <li><a href="#sec-data">Data Flow</a></li>
+    <li><a href="#sec-jobs">Scheduled Jobs</a></li>
+    <li><a href="#sec-vehicle">Vehicle Tracker</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg-shapes">
+    <div class="shape s1"></div>
+    <div class="shape s2"></div>
+    <div class="shape s3"></div>
+  </div>
+
+  <div class="hero-eyebrow">
+    <div class="eyebrow-dot"></div>
+    Complete Workflow & Operational Logic
+  </div>
+
+  <h1>
+    <span class="accent">Delhivery Driver Attendance summary</span>
+   
+  </h1>
+
+  <p class="hero-sub">
+    A fully automated, event-driven fleet operations platform — managing driver attendance, trip lifecycle, leave, comp off, and vehicle tracking in real time.
+  </p>
+
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="stat-num" data-target="14">0</div>
+      <div class="stat-label">Status Types</div>
+    </div>
+    <div class="hero-stat">
+      <div class="stat-num" data-target="8">0</div>
+      <div class="stat-label">Scheduled Jobs</div>
+    </div>
+    <div class="hero-stat">
+      <div class="stat-num" data-target="7">0</div>
+      <div class="stat-label">Core Modules</div>
+    </div>
+    <div class="hero-stat">
+      <div class="stat-num" data-target="5">0</div>
+      <div class="stat-label">Accident Stages</div>
+    </div>
+  </div>
+
+  <div class="hero-illustration">
+    <div style="font-size:0.72rem; color:rgba(255,255,255,0.4); font-family:'JetBrains Mono',monospace; margin-bottom:1rem; letter-spacing:1px;">SYSTEM MODULES</div>
+    <div class="module-flow">
+      <div class="mf-node">
+        <div class="mf-icon" style="background:#1D4ED8;">📋</div>
+        <div class="mf-text">
+          <span class="mf-num">01</span>
+          <span class="mf-name">Attendance</span>
+        </div>
+      </div>
+      <div class="mf-arrow">→</div>
+      <div class="mf-node">
+        <div class="mf-icon" style="background:#0F766E;">🚛</div>
+        <div class="mf-text">
+          <span class="mf-num">02</span>
+          <span class="mf-name">Trip Flow</span>
+        </div>
+      </div>
+      <div class="mf-arrow">→</div>
+      <div class="mf-node">
+        <div class="mf-icon" style="background:#B45309;">🏖</div>
+        <div class="mf-text">
+          <span class="mf-num">03</span>
+          <span class="mf-name">Leave Mgmt</span>
+        </div>
+      </div>
+      <div class="mf-arrow">→</div>
+      <div class="mf-node">
+        <div class="mf-icon" style="background:#6D28D9;">🔄</div>
+        <div class="mf-text">
+          <span class="mf-num">04</span>
+          <span class="mf-name">Comp Off</span>
+        </div>
+      </div>
+      <div class="mf-arrow">→</div>
+      <div class="mf-node">
+        <div class="mf-icon" style="background:#15803D;">🗄</div>
+        <div class="mf-text">
+          <span class="mf-num">05</span>
+          <span class="mf-name">Data Flow</span>
+        </div>
+      </div>
+      <div class="mf-arrow">→</div>
+      <div class="mf-node">
+        <div class="mf-icon" style="background:#9F1239;">🔧</div>
+        <div class="mf-text">
+          <span class="mf-num">06</span>
+          <span class="mf-name">Ops & Jobs</span>
+        </div>
+      </div>
+      <div class="mf-arrow">→</div>
+      <div class="mf-node">
+        <div class="mf-icon" style="background:#7C2D12;">🚗</div>
+        <div class="mf-text">
+          <span class="mf-num">07</span>
+          <span class="mf-name">Vehicle Tracker</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─────────────────────────────────────── -->
+<!-- MODULE 01: ATTENDANCE STATUS MASTER -->
+<!-- ─────────────────────────────────────── -->
+<section id="sec-attendance" style="background:var(--gray50);">
+  <div class="container">
+    <div class="section-label"><span class="dot"></span> Module 01</div>
+    <h2 class="section-title">Attendance Status Master</h2>
+    <p class="section-desc">14 distinct driver status types governing the full operational lifecycle — 9 present, 5 absent.</p>
+
+    <div class="grid-2" style="margin-top:2.5rem;">
+      <!-- PRESENT TABLE -->
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.75rem;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#22C55E;display:inline-block;"></span>
+          <span style="font-weight:700;font-size:0.85rem;color:var(--navy);">Present Statuses</span>
+        </div>
+        <div class="status-table-wrap">
+          <table class="st">
+            <thead>
+              <tr><th>ID</th><th>Status</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>01</td><td><span class="badge badge-green">Pending</span></td><td>Initial / Not Processed</td></tr>
+              <tr><td>02</td><td><span class="badge badge-green">Available</span></td><td>Available for Trip</td></tr>
+              <tr><td>03</td><td><span class="badge badge-blue">Assigned</span></td><td>Assigned to Trip (Leading)</td></tr>
+              <tr><td>04</td><td><span class="badge badge-blue">On Duty</span></td><td>Trip in Transit</td></tr>
+              <tr><td>05</td><td><span class="badge badge-purple">Week Off</span></td><td>Weekly Off (Sunday)</td></tr>
+              <tr><td>06</td><td><span class="badge badge-amber">Rest</span></td><td>Rest after Trip Completion</td></tr>
+              <tr><td>09</td><td><span class="badge badge-green">Paid Leave</span></td><td>Paid Leave (Credit Based)</td></tr>
+              <tr><td>13</td><td><span class="badge badge-blue">Hub Duty</span></td><td>Working in Hub</td></tr>
+              <tr><td>14</td><td><span class="badge badge-purple">Comp Off</span></td><td>Comp Off Utilization</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ABSENT TABLE + RULES -->
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.75rem;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#EF4444;display:inline-block;"></span>
+          <span style="font-weight:700;font-size:0.85rem;color:var(--navy);">Absent Statuses</span>
+        </div>
+        <div class="status-table-wrap" style="margin-bottom:1.25rem;">
+          <table class="st">
+            <thead>
+              <tr><th>ID</th><th>Status</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>07</td><td><span class="badge badge-red">Absent</span></td><td>Absent &gt; 4 Days</td></tr>
+              <tr><td>08</td><td><span class="badge badge-red">No Attendance</span></td><td>No Attendance for 3 Days</td></tr>
+              <tr><td>10</td><td><span class="badge badge-red">Unpaid Leave</span></td><td>Unpaid Leave</td></tr>
+              <tr><td>11</td><td><span class="badge badge-red">Absconded</span></td><td>Absconded &gt; 4 Days</td></tr>
+              <tr><td>12</td><td><span class="badge badge-amber">Driver Training</span></td><td>Staking / Learning</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="info-box info-box-blue ib-blue">
+          <div class="ib-icon">⚙️</div>
+          <div class="ib-content">
+            <div class="ib-label">Auto-Creation Job</div>
+            <div class="ib-body">
+              <strong>rmq-auto-create-driver-attendance</strong> runs daily at <strong>10:00 AM</strong>.<br>
+              If last status is <strong>Available (2)</strong>, <strong>Hub(13)</strong>, or <strong>Driver Training (12)</strong> → creates today's attendance with the same status.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKIP + ABSENT CREATION -->
+    <div class="grid-2" style="margin-top:1.5rem;">
+      <div class="card card-accent4">
+        <div class="card-header">
+          <div class="card-icon icon-amber">⚡</div>
+          <div><div class="card-title">Skip Conditions</div><div class="card-sub">When auto-creation is skipped</div></div>
+        </div>
+        <div class="info-box info-box-amber ib-amber">
+          <div class="ib-icon">🚫</div>
+          <div class="ib-content">
+            <div class="ib-label">Skip If</div>
+            <div class="ib-body">① Attendance already exists after <strong>06:00 AM</strong><br>② Last attendance date &gt; <strong>72 Hours</strong></div>
+          </div>
+        </div>
+        <p class="card-body">These conditions prevent duplicate attendance records and handle cases where drivers have been inactive for extended periods.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon icon-rose">🔴</div>
+          <div><div class="card-title">Absent → Absconded Logic</div><div class="card-sub">rmq-driver-absconded-status · 10:45 AM daily</div></div>
+        </div>
+        <div class="info-box info-box-rose ib-rose">
+          <div class="ib-icon">⚠️</div>
+          <div class="ib-content">
+            <div class="ib-label">Absent Creation</div>
+            <div class="ib-body">If last status is in <strong>12, 13</strong> AND last attendance date &gt; 72 hours → mark today as <strong>Absent (7)</strong></div>
+          </div>
+        </div>
+        <div class="info-box info-box-rose ib-rose">
+          <div class="ib-icon">🚨</div>
+          <div class="ib-content">
+            <div class="ib-label">Escalation</div>
+            <div class="ib-body">If Absent (7) continuously for &gt; <strong>4 Days</strong> → auto-update to <strong>Absconded (11)</strong> from next day</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- MODULE 02: TRIP & DRIVER STATUS FLOW -->
+<section id="sec-trip" style="background:white;">
+  <div class="container">
+    <div class="section-label"><span class="dot"></span> Module 02</div>
+    <h2 class="section-title">Trip &amp; Driver Status Flow</h2>
+    <p class="section-desc">The complete lifecycle of a trip from creation to closure, with automated driver state transitions at each stage.</p>
+
+    <!-- FLOW DIAGRAM -->
+    <div class="flow-wrap" style="margin:3rem 0 2rem;">
+      <div class="flow-step">
+        <div class="flow-circle fc3">🚛</div>
+        <div class="flow-step-num">STAGE 01</div>
+        <div class="flow-step-label">Trip Created</div>
+        <div class="flow-step-badge"><span class="badge badge-amber">Pending</span></div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-step">
+        <div class="flow-circle fc1">📋</div>
+        <div class="flow-step-num">STAGE 02</div>
+        <div class="flow-step-label">Trip Leading</div>
+        <div class="flow-step-badge"><span class="badge badge-blue">Assigned (3)</span></div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-step">
+        <div class="flow-circle fc4">🚀</div>
+        <div class="flow-step-num">STAGE 03</div>
+        <div class="flow-step-label">In Transit</div>
+        <div class="flow-step-badge"><span class="badge badge-blue">On Duty (4)</span></div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-step">
+        <div class="flow-circle fc5">✅</div>
+        <div class="flow-step-num">STAGE 04</div>
+        <div class="flow-step-label">Trip Closed</div>
+        <div class="flow-step-badge"><span class="badge badge-amber">Rest (6)</span></div>
+      </div>
+      <div class="flow-connector"></div>
+      <div class="flow-step">
+        <div class="flow-circle fc2">🟢</div>
+        <div class="flow-step-num">FINAL</div>
+        <div class="flow-step-label">Rest Complete</div>
+        <div class="flow-step-badge"><span class="badge badge-green">Available (2)</span></div>
+      </div>
+    </div>
+
+    <!-- KM RULES + ABSCONDED -->
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon icon-teal">⏱</div>
+          <div><div class="card-title">Rest → Available Logic</div><div class="card-sub">Job runs every 5 minutes · checks closed trips</div></div>
+        </div>
+        <p class="card-body" style="margin-bottom:1rem;">Once a trip is closed, the driver enters Rest status. The duration before returning to Available depends on the distance driven:</p>
+        <div class="km-grid">
+          <div class="km-card km-1">
+            <div class="km-range">KM &lt; 400</div>
+            <div class="km-rest">Rest Period</div>
+            <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.4rem;color:var(--navy);margin-bottom:4px;">2 hrs</div>
+            <div class="km-result">→ Available (2)</div>
+          </div>
+          <div class="km-card km-2">
+            <div class="km-range">400–800 KM</div>
+            <div class="km-rest">Rest Period</div>
+            <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.4rem;color:var(--navy);margin-bottom:4px;">4 hrs</div>
+            <div class="km-result">→ Available (2)</div>
+          </div>
+          <div class="km-card km-3">
+            <div class="km-range">KM ≥ 800</div>
+            <div class="km-rest">Rest Period</div>
+            <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.4rem;color:var(--navy);margin-bottom:4px;">8 hrs</div>
+            <div class="km-result">→ Available (2)</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon icon-rose">🚨</div>
+          <div><div class="card-title">Absconded Creation</div><div class="card-sub">rmq-driver-absconded-status · Daily 10:45 AM</div></div>
+        </div>
+        <div class="info-box info-box-rose ib-rose">
+          <div class="ib-icon">📅</div>
+          <div class="ib-content">
+            <div class="ib-label">Trigger Condition</div>
+            <div class="ib-body">Status = <strong>Absent (7)</strong> continuously for more than <strong>4 Days</strong></div>
+          </div>
+        </div>
+        <div class="info-box info-box-rose ib-rose">
+          <div class="ib-icon">🔄</div>
+          <div class="ib-content">
+            <div class="ib-label">Auto Action</div>
+            <div class="ib-body">Update Status = <strong>Absconded (11)</strong> from the next day automatically — no manual intervention required</div>
+          </div>
+        </div>
+        <div class="info-box info-box-blue ib-blue">
+          <div class="ib-icon">📡</div>
+          <div class="ib-content">
+            <div class="ib-label">Absconded Job</div>
+            <div class="ib-body"><strong>rmq-driver-absconded-status-update</strong> — runs daily, processes all eligible absent drivers at 10:45 AM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- MODULE 03: LEAVE MANAGEMENT -->
+<section id="sec-leave" style="background:var(--gray50);">
+  <div class="container">
+    <div class="section-label"><span class="dot"></span> Module 03</div>
+    <h2 class="section-title">Leave &amp; Week Off Management</h2>
+    <p class="section-desc">Automated paid leave generation based on attendance, manual week-off control, and driver leave availability tracking.</p>
+
+    <div class="grid-2" style="margin-top:2.5rem;">
+      <!-- PAID LEAVE -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon icon-green">📅</div>
+          <div><div class="card-title">Paid Leave Auto-Generation</div><div class="card-sub">rmq-div-monthly-driver-leave-update · Monthly 10:10 AM</div></div>
+        </div>
+        <div class="info-box info-box-green ib-green">
+          <div class="ib-icon">✅</div>
+          <div class="ib-content">
+            <div class="ib-label">Eligibility Condition</div>
+            <div class="ib-body">If <strong>Present Days in Last Month &gt; 13</strong></div>
+          </div>
+        </div>
+        <div class="info-box info-box-teal ib-teal">
+          <div class="ib-icon">🎁</div>
+          <div class="ib-content">
+            <div class="ib-label">Credit Applied</div>
+            <div class="ib-body"><strong>1.5 Paid Leave (3 Half Days)</strong><br>Valid Till: Current Month End</div>
+          </div>
+        </div>
+        <div class="info-box info-box-blue ib-blue">
+          <div class="ib-icon">🔗</div>
+          <div class="ib-content">
+            <div class="ib-label">System Actions</div>
+            <div class="ib-body">
+              → Update <strong>DriverLeaves.leaveAvailability</strong><br>
+              → Create Log in <strong>DriverLeaveLog</strong><br>
+              → Consumer: <em>dhv-driver-leave-log-create</em>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WEEK OFF -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon icon-purple">🗓</div>
+          <div><div class="card-title">Week Off Management</div><div class="card-sub">Automatic Sunday + Manual Override</div></div>
+        </div>
+        <div class="info-box info-box-purple ib-purple">
+          <div class="ib-icon">🤖</div>
+          <div class="ib-content">
+            <div class="ib-label">Automatic Rule</div>
+            <div class="ib-body"><strong>Only on Sunday</strong> → Status = Week Off (5)<br>Created automatically from the auto-attendance screen</div>
+          </div>
+        </div>
+        <div class="info-box info-box-amber ib-amber">
+          <div class="ib-icon">✋</div>
+          <div class="ib-content">
+            <div class="ib-label">Manual Override</div>
+            <div class="ib-body">Admin can manually create <strong>Week Off (5)</strong> for any day from the Attendance Screen</div>
+          </div>
+        </div>
+        <div style="margin-top:1rem;">
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+            <div style="flex:1;min-width:140px;background:var(--gray50);border:1px solid var(--gray200);border-radius:8px;padding:1rem;text-align:center;">
+              <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.5rem;color:var(--navy);">5</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);">Week Off Status ID</div>
+            </div>
+            <div style="flex:1;min-width:140px;background:var(--gray50);border:1px solid var(--gray200);border-radius:8px;padding:1rem;text-align:center;">
+              <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:1.5rem;color:var(--navy);">Sunday</div>
+              <div style="font-size:0.75rem;color:var(--text-muted);">Auto-trigger Day</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- MODULE 04: COMP OFF LIFECYCLE -->
+<section id="sec-compoff" style="background:white;">
+  <div class="container">
+    <div class="section-label"><span class="dot"></span> Module 04</div>
+    <h2 class="section-title">Comp Off Complete Lifecycle</h2>
+    <p class="section-desc">From Generation on Sunday work → Manual Utilization → Auto-Expiry → Encashment for Volvo drivers.</p>
+
+    <div class="co-grid" style="margin-top:2.5rem;">
+      <div class="co-card">
+        <div class="co-header" style="background:#EFF6FF;">
+          <div class="co-letter-badge" style="background:#1D4ED8;">G</div>
+          <div class="co-title-wrap">
+            <div class="co-letter-title">STAGE C</div>
+            <div class="co-main-title">Generation</div>
+          </div>
+        </div>
+        <div class="co-body">
+          If driver worked on <strong>Sunday</strong> or <strong>National Holiday</strong>:<br><br>
+          → <strong>1 Comp Off (14)</strong> is generated<br>
+          → Expiry: <strong>20–30 days</strong> from generation date<br>
+          → Log created in <strong>leaveAvailability</strong><br><br>
+          Consumer: <em style="font-size:0.78rem;color:var(--blue);">dhv-driver-leave-log-create</em>
+        </div>
+        <div class="co-trigger">⏰ Every Monday · 10:30 AM</div>
+      </div>
+
+      <div class="co-card">
+        <div class="co-header" style="background:#F0FDFA;">
+          <div class="co-letter-badge" style="background:#0F766E;">U</div>
+          <div class="co-title-wrap">
+            <div class="co-letter-title">STAGE D</div>
+            <div class="co-main-title">Utilization</div>
+          </div>
+        </div>
+        <div class="co-body">
+          Manager manually creates attendance with<br>
+          Status = <strong>Comp Off (14)</strong><br><br>
+          → Deduct from available comp off count<br>
+          → Update log as <strong>Used</strong> in DriverLeaveLog<br><br>
+          Consumer: <em style="font-size:0.78rem;color:var(--teal);">dhv-driver-leave-log-update</em>
+        </div>
+        <div class="co-trigger">✋ Manual · Manager Action</div>
+      </div>
+
+      <div class="co-card">
+        <div class="co-header" style="background:#FFFBEB;">
+          <div class="co-letter-badge" style="background:#B45309;">E</div>
+          <div class="co-title-wrap">
+            <div class="co-letter-title">STAGE E</div>
+            <div class="co-main-title">Expiry Check</div>
+          </div>
+        </div>
+        <div class="co-body">
+          <strong>Condition:</strong><br>
+          DriverLeaveLog.expiresOn &lt; Today<br>
+          AND Status = Available<br><br>
+          → Mark as <strong>Expired (Not Available)</strong><br>
+          → Reset Available CompOff in leaveAvailability<br><br>
+          Job: <em style="font-size:0.78rem;color:var(--amber);">rmq-div-msl-driver-compoff-reset</em>
+        </div>
+        <div class="co-trigger">⏰ Daily · Real Time</div>
+      </div>
+
+      <div class="co-card">
+        <div class="co-header" style="background:#FFF1F2;">
+          <div class="co-letter-badge" style="background:#9F1239;">F</div>
+          <div class="co-title-wrap">
+            <div class="co-letter-title">STAGE F</div>
+            <div class="co-main-title">Encashment</div>
+          </div>
+        </div>
+        <div class="co-body">
+          <strong>Condition:</strong><br>
+          Last Month Closing Balance &gt; <strong>4</strong><br>
+          AND Driver Category = <strong>Volvo</strong><br><br>
+          Excess CompOff Encashed:<br>
+          <strong>Example: 6 – 4 = 2 Encash</strong><br><br>
+          → Update Used CompOff in leaveAvailability
+        </div>
+        <div class="co-trigger">⏰ Monthly · 10:10 AM</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- MODULE 05: DATA FLOW -->
+<section id="sec-data" style="background:var(--gray50);">
+  <div class="container">
+    <div class="section-label"><span class="dot"></span> Module 05</div>
+    <h2 class="section-title">Data Flow &amp; Table Relationships</h2>
+    <p class="section-desc">How data moves between core tables, processed asynchronously via RabbitMQ consumers for reliability at scale.</p>
+
+    <div class="db-flow" style="margin-top:2.5rem;">
+      <div class="db-card">
+        <div class="db-head db-head-blue">DriverAttendances</div>
+        <div class="db-row-item">📄 All Created Records</div>
+        <div class="db-row-item">📅 Raw Status Data</div>
+        <div class="db-row-item">🕐 Date & Timestamps</div>
+        <div class="db-row-item">🔑 Driver References</div>
+      </div>
+      <div class="db-arrow-wrap">→</div>
+      <div class="db-card">
+        <div class="db-head" style="background:#1D4ED8;color:white;">DailyDriverAttendance</div>
+        <div class="db-row-item">📊 One Record/Driver/Day</div>
+        <div class="db-row-item">📈 Latest Status</div>
+        <div class="db-row-item">🔄 Aggregated View</div>
+      </div>
+      <div class="db-arrow-wrap">→</div>
+      <div class="db-card">
+        <div class="db-head db-head-amber">DriverLeaveLog</div>
+        <div class="db-row-item">📋 Generation Records</div>
+        <div class="db-row-item">✅ Usage Tracking</div>
+        <div class="db-row-item">📅 Expiry Dates</div>
+        <div class="db-row-item">💰 Encashment Log</div>
+      </div>
+      <div class="db-arrow-wrap">→</div>
+      <div class="db-card">
+        <div class="db-head db-head-green">leaveAvailability</div>
+        <div class="db-row-item">💚 Current Balance</div>
+        <div class="db-row-item">📊 Available Count</div>
+        <div class="db-row-item">🔢 Used Count</div>
+        <div class="db-row-item">🔄 Reset on Expiry</div>
+      </div>
+    </div>
+
+    <div class="info-box info-box-blue ib-blue" style="margin-top:2rem;">
+      <div class="ib-icon">📡</div>
+      <div class="ib-content">
+        <div class="ib-label">Infrastructure</div>
+        <div class="ib-body">All events are stored and processed via <strong>RabbitMQ Consumers</strong> — ensuring reliable, decoupled, asynchronous processing across all modules. Each consumer handles a specific domain event and updates the relevant tables atomically.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- MODULE 06: MANUAL OPERATIONS -->
+<section style="background:white;">
+  <div class="container">
+    <div class="section-label"><span class="dot"></span> Module 06</div>
+    <h2 class="section-title">Manual Operations &amp; User Actions</h2>
+    <p class="section-desc">What administrators and managers can perform manually, and the restrictions that enforce data integrity.</p>
+
+    <div class="ops-grid" style="margin-top:2.5rem;">
+      <div class="ops-card">
+        <div class="ops-icon">📋</div>
+        <div class="ops-title">Create Attendance</div>
+        <div class="ops-api">/api/attendances/create/</div>
+        <div class="ops-desc">Manually log a driver's daily attendance from the Attendance Screen for any eligible status.</div>
+      </div>
+      <div class="ops-card">
+        <div class="ops-icon">🔄</div>
+        <div class="ops-title">Update Accident Status</div>
+        <div class="ops-api">/api/assessments/injuries/</div>
+        <div class="ops-desc">Manually update vehicle accident and insurance tracking status through the 5-stage process.</div>
+      </div>
+      <div class="ops-card">
+        <div class="ops-icon">🚗</div>
+        <div class="ops-title">Assign Driver to Trip</div>
+        <div class="ops-api">/api/trips/basicpolies/id</div>
+        <div class="ops-desc">Manually assign an available driver to a specific trip, triggering the Assigned (3) status.</div>
+      </div>
+      <div class="ops-card">
+        <div class="ops-icon">🏖</div>
+        <div class="ops-title">Apply Leave / Comp Off</div>
+        <div class="ops-api">Leave / Comp Off Screen</div>
+        <div class="ops-desc">Apply Paid Leave, Week Off, or Comp Off utilization manually for any eligible driver.</div>
+      </div>
+    </div>
+
+    <div class="restriction" style="margin-top:2rem;">
+      <div class="restr-icon">🚫</div>
+      <div>
+        <div class="restr-title">Restrictions — Cannot Create Manual Attendance When Driver Status Is:</div>
+        <div class="restr-pills">
+          <div class="restr-pill">Assigned (3)</div>
+          <div class="restr-pill">On Duty (4)</div>
+          <div class="restr-pill">Rest (5)</div>
+        </div>
+        <div style="margin-top:0.75rem;font-size:0.83rem;color:#9F1239;">These restrictions prevent conflicting attendance records during active trip operations.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- MODULE 07: VEHICLE ACCIDENT TRACKER -->
+<section id="sec-vehicle" style="background:var(--gray50);">
+  <div class="container">
+    <div class="section-label"><span class="dot"></span> Module 07</div>
+    <h2 class="section-title">Vehicle Accident Tracker</h2>
+    <p class="section-desc">A structured 5-stage manual tracking workflow for vehicle accidents — from report to full recovery and fleet return.</p>
+
+    <div class="vehicle-flow" style="margin-top:2.5rem;gap:0.5rem;">
+      <div class="vs-step">
+        <div class="vs-icon">💥</div>
+        <div class="vs-num">STAGE 01</div>
+        <div class="vs-title">Accident Created</div>
+        <div class="vs-desc">/api/assessment/create — initial report logged</div>
+      </div>
+      <div class="vs-arrow">→</div>
+      <div class="vs-step">
+        <div class="vs-icon">🔍</div>
+        <div class="vs-num">STAGE 02</div>
+        <div class="vs-title">Status Update</div>
+        <div class="vs-desc">12 Vehicle StatusCodes track current state</div>
+      </div>
+      <div class="vs-arrow">→</div>
+      <div class="vs-step">
+        <div class="vs-icon">🔧</div>
+        <div class="vs-num">STAGE 03</div>
+        <div class="vs-title">Repair Process</div>
+        <div class="vs-desc">Garage / repair tracking stages</div>
+      </div>
+      <div class="vs-arrow">→</div>
+      <div class="vs-step">
+        <div class="vs-icon">📄</div>
+        <div class="vs-num">STAGE 04</div>
+        <div class="vs-title">Insurance Claim</div>
+        <div class="vs-desc">Claim tracking and documentation</div>
+      </div>
+      <div class="vs-arrow">→</div>
+      <div class="vs-step">
+        <div class="vs-icon">✅</div>
+        <div class="vs-num">STAGE 05</div>
+        <div class="vs-title">Fully Recovered</div>
+        <div class="vs-desc">Marked closed, returned to active fleet</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- MODULE 08: SCHEDULED JOBS -->
+<section id="sec-jobs" style="background:white;">
+  <div class="container">
+    <div class="section-label"><span class="dot"></span> Module 08</div>
+    <h2 class="section-title">Key Scheduled Jobs Overview</h2>
+    <p class="section-desc">All automated background jobs powering the system — their triggers, frequencies, and what they do.</p>
+
+    <div class="job-grid" style="margin-top:2.5rem;">
+      <div class="job-card">
+        <div class="job-name">rmq-auto-create-driver-attendance</div>
+        <div class="job-meta">
+          <span class="job-pill jp-freq">📅 Daily</span>
+          <span class="job-pill jp-time">⏰ 10:00 AM</span>
+          <span class="job-pill jp-type">RabbitMQ</span>
+        </div>
+        <div class="job-desc">Mark auto-attendance for eligible drivers. Creates today's attendance if last status is Available, Paid Leave, or Driver Training — with skip conditions applied.</div>
+      </div>
+
+      <div class="job-card">
+        <div class="job-name">rmq-driver-absent-create</div>
+        <div class="job-meta">
+          <span class="job-pill jp-freq">📅 Daily</span>
+          <span class="job-pill jp-time">⏰ 10:00 AM</span>
+          <span class="job-pill jp-type">RabbitMQ</span>
+        </div>
+        <div class="job-desc">Mark absent if no attendance for 3+ days. Triggers absent (7) status when last attendance date is more than 72 hours ago.</div>
+      </div>
+
+      <div class="job-card">
+        <div class="job-name">rmq-second-driver-attendance-create</div>
+        <div class="job-meta">
+          <span class="job-pill jp-freq">📅 Daily</span>
+          <span class="job-pill jp-time">⏰ 10:00 AM</span>
+          <span class="job-pill jp-type">RabbitMQ</span>
+        </div>
+        <div class="job-desc">Create attendance when a driver is mapped to a trip. Fires when a driver is assigned, requiring an attendance record to be created or updated.</div>
+      </div>
+
+      <div class="job-card">
+        <div class="job-name">rmq-div-attendance-create</div>
+        <div class="job-meta">
+          <span class="job-pill jp-freq">⚡ Real Time</span>
+          <span class="job-pill jp-time">⏰ Instant</span>
+          <span class="job-pill jp-type">Event-Driven</span>
+        </div>
+        <div class="job-desc">Update attendance on driver status updates and trip close. Real-time event-driven synchronization for immediate state consistency.</div>
+      </div>
+
+      <div class="job-card">
+        <div class="job-name">rmq-div-weekly-driver-compoff-update</div>
+        <div class="job-meta">
+          <span class="job-pill jp-freq">📅 Weekly</span>
+          <span class="job-pill jp-time">⏰ Mon 10:30 AM</span>
+          <span class="job-pill jp-type">Comp Off</span>
+        </div>
+        <div class="job-desc">Generate comp off for Sunday work. Credits one comp-off to any driver who worked on Sunday or a national holiday in the past week.</div>
+      </div>
+
+      <div class="job-card">
+        <div class="job-name">rmq-div-msl-driver-compoff-reset</div>
+        <div class="job-meta">
+          <span class="job-pill jp-freq">📅 Daily</span>
+          <span class="job-pill jp-time">⏰ Real Time</span>
+          <span class="job-pill jp-type">Comp Off</span>
+        </div>
+        <div class="job-desc">Expire comp off after 30 days. Checks all expiry dates and resets available comp off balance when records have passed their expiry date.</div>
+      </div>
+
+      <div class="job-card">
+        <div class="job-name">rmq-div-driver-compoff-encash</div>
+        <div class="job-meta">
+          <span class="job-pill jp-freq">📅 Monthly</span>
+          <span class="job-pill jp-time">⏰ 10:10 AM</span>
+          <span class="job-pill jp-type">Comp Off</span>
+        </div>
+        <div class="job-desc">Encash extra comp off above 4 units for Volvo category drivers. Excess balance is encashed and a salary credit is triggered automatically.</div>
+      </div>
+
+      <div class="job-card">
+        <div class="job-name">rmq-div-driver-leave-log-update</div>
+        <div class="job-meta">
+          <span class="job-pill jp-freq">⚡ Real Time</span>
+          <span class="job-pill jp-time">⏰ Instant</span>
+          <span class="job-pill jp-type">Event-Driven</span>
+        </div>
+        <div class="job-desc">Track comp off log on utilization (Done rule). Updates driver leave log entries when comp off is manually utilized by a manager.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- LEGEND & NOTES -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">🚛 DFMS</div>
+  <div class="footer-sub">Delivery Driver & Fleet Management System — Complete Workflow Architecture</div>
+  <div class="footer-tags">
+    <div class="footer-tag">14 Status Types</div>
+    <div class="footer-tag">8 Scheduled Jobs</div>
+    <div class="footer-tag">RabbitMQ Event-Driven</div>
+    <div class="footer-tag">Real-Time Automation</div>
+    <div class="footer-tag">7 Core Modules</div>
+  </div>
+  <div style="margin-top:2rem;font-size:0.75rem;color:rgba(255,255,255,0.25);">All Systems Operational</div>
+</footer>
+
+<script>
+// INTERSECTION OBSERVER — reveal on scroll
+const io = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 60);
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.card, .tl-item, .job-card, .ops-card, .co-card, .vs-step').forEach(el => io.observe(el));
+
+// STAGGER DELAYS
+document.querySelectorAll('.grid-3 .card, .grid-4 .card, .ops-grid .ops-card, .co-grid .co-card').forEach((el,i) => {
+  el.style.transitionDelay = (i * 0.08) + 's';
+});
+document.querySelectorAll('.job-card').forEach((el,i) => { el.style.transitionDelay = (i * 0.07) + 's'; });
+document.querySelectorAll('.vs-step').forEach((el,i) => { el.style.transitionDelay = (i * 0.12) + 's'; });
+
+// COUNTER ANIMATION
+function countUp(el, target, duration) {
+  let start = null;
+  const step = ts => {
+    if (!start) start = ts;
+    const p = Math.min((ts - start) / duration, 1);
+    el.textContent = Math.floor(p * target);
+    if (p < 1) requestAnimationFrame(step);
+    else el.textContent = target;
+  };
+  requestAnimationFrame(step);
+}
+const cio = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      countUp(e.target, +e.target.dataset.target, 1800);
+      cio.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('[data-target]').forEach(el => cio.observe(el));
+
+// SMOOTH HOVER COLORS ON NAV ACTIVE
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 100) current = s.id; });
+  navLinks.forEach(a => {
+    a.style.background = '';
+    a.style.color = '';
+    if (a.getAttribute('href') === '#' + current) {
+      a.style.background = 'var(--blue-pale)';
+      a.style.color = 'var(--blue)';
+    }
+  });
+});
+</script>
+</body>
+</html>
