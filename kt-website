@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>kt telematics — Fleet &amp; Tyre Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0B1F2A;
+    --ink-soft:#132C3A;
+    --ink-soft2:#1B3B4C;
+    --teal:#22B8A0;
+    --teal-deep:#148C79;
+    --teal-bright:#3FD9BE;
+    --mint:#E7F7F2;
+    --paper:#FBFDFC;
+    --amber:#F2A93B;
+    --slate:#5B6B72;
+    --line:#D9E6E2;
+    --max:1180px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    background:var(--paper);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.wordmark{font-family:'Sora',sans-serif;}
+  a{color:inherit;text-decoration:none;}
+  img,svg{display:block;max-width:100%;}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 32px;}
+  section{position:relative;}
+ 
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+ 
+  /* ---------- NAV ---------- */
+  header{
+    position:fixed;top:0;left:0;right:0;z-index:200;
+    padding:22px 0;
+    background:linear-gradient(to bottom, rgba(11,31,42,0.9), rgba(11,31,42,0));
+    transition:background .35s ease, padding .35s ease, box-shadow .35s ease;
+  }
+  header.solid{background:rgba(11,31,42,0.92);backdrop-filter:blur(8px);padding:14px 0;box-shadow:0 8px 24px -12px rgba(0,0,0,0.4);}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;}
+  .wordmark{font-size:20px;font-weight:700;color:#fff;display:flex;align-items:baseline;gap:2px;letter-spacing:-0.01em;}
+  .wordmark span{font-weight:400;color:var(--teal-bright);}
+  nav.links{display:flex;gap:36px;align-items:center;}
+  nav.links a{font-size:14.5px;color:rgba(255,255,255,0.82);font-weight:500;transition:color .2s;position:relative;}
+  nav.links a::after{content:'';position:absolute;left:0;bottom:-5px;width:0;height:1.5px;background:var(--teal-bright);transition:width .25s ease;}
+  nav.links a:hover{color:#fff;}
+  nav.links a:hover::after{width:100%;}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:12px 26px;border-radius:8px;font-size:14.5px;font-weight:600;
+    cursor:pointer;border:1px solid transparent;transition:transform .2s ease, box-shadow .2s ease, background .2s ease;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn-solid{background:linear-gradient(135deg,var(--teal),var(--teal-deep));color:#fff;box-shadow:0 8px 20px -8px rgba(34,184,160,0.6);}
+  .btn-solid:hover{box-shadow:0 14px 26px -10px rgba(34,184,160,0.75);}
+  .btn-ghost{border-color:rgba(255,255,255,0.35);color:#fff;}
+  .btn-ghost:hover{border-color:#fff;background:rgba(255,255,255,0.06);}
+ 
+  /* ---------- HERO ---------- */
+  .hero{
+    background:radial-gradient(120% 100% at 15% 0%, #16394A 0%, var(--ink) 55%);
+    min-height:100vh;
+    display:flex;flex-direction:column;justify-content:center;
+    padding-top:110px;
+    overflow:hidden;
+    position:relative;
+  }
+  .hero-bg-shape{
+    position:absolute;border-radius:50%;filter:blur(60px);opacity:0.14;pointer-events:none;
+  }
+  .shape-1{width:420px;height:420px;background:var(--teal-bright);top:-120px;right:-100px;}
+  .shape-2{width:340px;height:340px;background:var(--amber);bottom:60px;left:-120px;opacity:0.08;}
+ 
+  .hero .wrap{position:relative;z-index:3;}
+  .hero-tag{
+    display:inline-flex;align-items:center;gap:9px;
+    font-size:13px;font-weight:500;color:var(--teal-bright);
+    margin-bottom:22px;
+  }
+  .hero-tag .dot{width:7px;height:7px;border-radius:50%;background:var(--teal-bright);box-shadow:0 0 0 0 rgba(63,217,190,0.6);animation:pulse 2.2s infinite;}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(63,217,190,0.55);}
+    70%{box-shadow:0 0 0 10px rgba(63,217,190,0);}
+    100%{box-shadow:0 0 0 0 rgba(63,217,190,0);}
+  }
+  .hero h1{
+    font-size:clamp(38px,5.4vw,66px);
+    font-weight:700;
+    color:#fff;
+    letter-spacing:-0.02em;
+    line-height:1.08;
+    max-width:800px;
+  }
+  .hero h1 .line{display:block;overflow:hidden;}
+  .hero h1 .line span{display:inline-block;}
+  .hero p.sub{
+    margin-top:26px;
+    font-size:18px;
+    color:rgba(255,255,255,0.68);
+    max-width:520px;
+  }
+  .hero-ctas{display:flex;gap:16px;margin-top:38px;}
+ 
+  /* floating badges in hero */
+  .float-badge{
+    position:absolute;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);
+    backdrop-filter:blur(6px);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:9px;
+    font-size:12.5px;color:#fff;font-weight:500;z-index:3;opacity:0;
+  }
+  .badge-a{top:16%;right:6%;}
+  .badge-b{top:42%;right:16%;}
+  .badge-c{top:8%;left:2%;}
+ 
+  .road-stage{
+    position:relative;
+    height:230px;
+    margin-top:50px;
+    z-index:2;
+  }
+  .road-line{
+    position:absolute;left:0;right:0;bottom:64px;height:1px;
+    background:linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.16) 15%, rgba(255,255,255,0.16) 85%, rgba(255,255,255,0) 100%);
+  }
+  .road-dashes{
+    position:absolute;left:0;right:0;bottom:63px;height:3px;
+    background:repeating-linear-gradient(90deg, rgba(63,217,190,0.55) 0 26px, transparent 26px 54px);
+    background-size:80px 3px;
+  }
+  .bg-vehicle{position:absolute;bottom:2px;opacity:0.16;}
+  #truck{position:absolute;bottom:0;left:-260px;width:230px;z-index:2;}
+  .wheel{transform-origin:center;}
+ 
+  /* ---------- MARQUEE ---------- */
+  .marquee{background:var(--ink-soft);padding:16px 0;overflow:hidden;border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.06);}
+  .marquee-track{display:flex;align-items:center;width:max-content;gap:0;}
+  .marquee-item{display:flex;align-items:center;gap:12px;padding:0 34px;color:rgba(255,255,255,0.55);font-size:13.5px;font-weight:600;letter-spacing:0.02em;white-space:nowrap;}
+  .marquee-item svg{opacity:0.75;}
+  .marquee-item .sep{width:5px;height:5px;border-radius:50%;background:var(--teal-bright);opacity:0.7;}
+ 
+  /* ---------- STATS ---------- */
+  .stats{background:var(--ink-soft);padding:64px 0;}
+  .stats .wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .stat-card{text-align:center;display:flex;flex-direction:column;align-items:center;}
+  .stat-gauge{width:74px;height:74px;margin-bottom:16px;}
+  .stat-num{font-family:'Sora',sans-serif;font-size:clamp(28px,3.4vw,40px);font-weight:700;color:#fff;}
+  .stat-label{font-size:13.5px;color:rgba(255,255,255,0.55);margin-top:6px;}
+ 
+  /* ---------- SECTION HEADS ---------- */
+  .kicker{font-size:13.5px;font-weight:600;color:var(--teal-deep);margin-bottom:14px;}
+  .kicker.light{color:var(--teal-bright);}
+  .section-head{max-width:600px;margin-bottom:56px;}
+  .section-head h2{font-size:clamp(28px,3.4vw,38px);font-weight:700;letter-spacing:-0.015em;line-height:1.18;}
+  .section-head p{margin-top:16px;font-size:16.5px;color:var(--slate);}
+ 
+  /* ---------- CONVOY (pinned scroll scene) ---------- */
+  .convoy-pin{background:var(--ink);height:100vh;overflow:hidden;position:relative;}
+  .convoy-inner{position:relative;height:100%;display:flex;flex-direction:column;justify-content:center;}
+  .convoy-heading{position:absolute;top:14%;left:0;right:0;text-align:center;z-index:5;}
+  .convoy-heading .wrap{padding:0 32px;}
+  .convoy-word{position:absolute;top:0;left:0;right:0;font-size:clamp(34px,6vw,72px);font-weight:800;color:#fff;letter-spacing:-0.02em;opacity:0;}
+  .convoy-word span{color:var(--teal-bright);}
+  .convoy-caption{position:absolute;bottom:14%;left:0;right:0;text-align:center;color:rgba(255,255,255,0.5);font-size:14.5px;z-index:5;}
+  .convoy-road{position:absolute;bottom:14%;left:0;right:0;height:2px;background:rgba(255,255,255,0.12);}
+  .convoy-dashes{position:absolute;bottom:calc(14% - 1px);left:0;right:0;height:4px;background:repeating-linear-gradient(90deg, var(--teal-bright) 0 30px, transparent 30px 64px);}
+  .convoy-layer{position:absolute;bottom:14%;}
+  .layer-far{opacity:0.35;filter:blur(0.4px);}
+  .layer-mid{opacity:0.7;}
+  .layer-near{opacity:1;}
+ 
+  /* ---------- PRODUCTS ---------- */
+  .products{padding:120px 0 110px;}
+  .product-row{
+    display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;
+    padding:60px 0;
+  }
+  .product-row + .product-row{border-top:1px solid var(--line);}
+  .product-row.reverse .art{order:2;}
+  .product-row.reverse .copy{order:1;}
+  .product-eyebrow{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .product-eyebrow .chip{
+    font-size:12.5px;font-weight:600;color:var(--teal-deep);background:var(--mint);
+    padding:5px 11px;border-radius:6px;
+  }
+  .copy h3{font-size:27px;font-weight:700;letter-spacing:-0.01em;margin-bottom:14px;}
+  .copy p{color:var(--slate);font-size:15.5px;margin-bottom:22px;max-width:440px;}
+  .feature-list{display:flex;flex-direction:column;gap:11px;}
+  .feature-list li{list-style:none;display:flex;gap:10px;align-items:flex-start;font-size:14.5px;color:var(--ink);}
+  .feature-list svg{flex-shrink:0;margin-top:3px;}
+ 
+  .art{
+    background:var(--mint);border-radius:20px;height:380px;
+    display:flex;align-items:center;justify-content:center;
+    position:relative;overflow:hidden;
+    transition:transform .4s ease;
+  }
+  .art:hover{transform:translateY(-4px);}
+  .art.dark{background:linear-gradient(160deg,#132C3A,#0B1F2A);}
+  .art-inner{width:100%;height:100%;position:relative;}
+ 
+  /* mini map styling */
+  .minimap-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(34,184,160,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(34,184,160,0.08) 1px, transparent 1px);background-size:28px 28px;}
+  .pin{position:absolute;transform:translate(-50%,-100%);}
+  .pin-pulse{position:absolute;border-radius:50%;background:var(--teal);opacity:0.35;}
+ 
+  /* gauge styling */
+  .gauge-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;}
+  .gauge-value{font-family:'Sora',sans-serif;font-weight:700;font-size:15px;color:#fff;}
+  .gauge-caption{font-size:11.5px;color:rgba(255,255,255,0.45);}
+ 
+  /* ---------- FLOW ---------- */
+  .flow{background:var(--mint);padding:120px 0;}
+  .flow-track{position:relative;margin-top:76px;}
+  .flow-path{position:relative;height:2px;background:var(--line);margin:0 60px;}
+  .flow-path .fill{position:absolute;top:0;left:0;height:100%;width:0%;background:linear-gradient(90deg,var(--teal),var(--teal-bright));}
+  .flow-vehicle{position:absolute;top:50%;left:0;width:34px;transform:translate(-50%,-58%);}
+  .flow-steps{display:grid;grid-template-columns:repeat(3,1fr);margin-top:-14px;padding:0 60px;}
+  .flow-step{text-align:center;padding-top:44px;position:relative;}
+  .flow-step .node{
+    position:absolute;top:0;left:50%;transform:translate(-50%,-50%);
+    width:52px;height:52px;border-radius:50%;background:#fff;border:2px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    transition:border-color .3s, box-shadow .3s, transform .3s;
+  }
+  .flow-step.active .node{border-color:var(--teal);box-shadow:0 0 0 6px rgba(34,184,160,0.14);transform:translate(-50%,-50%) scale(1.08);}
+  .flow-step h4{font-size:17px;font-weight:700;margin-bottom:8px;}
+  .flow-step p{font-size:14px;color:var(--slate);max-width:230px;margin:0 auto;}
+ 
+  /* ---------- LOGO STRIP ---------- */
+  .trusted{padding:70px 0 0;text-align:center;}
+  .trusted .kicker{margin-bottom:26px;}
+  .logo-row{display:flex;justify-content:center;flex-wrap:wrap;gap:44px;opacity:0.55;}
+  .logo-row span{font-family:'Sora',sans-serif;font-weight:700;font-size:18px;color:var(--slate);letter-spacing:0.02em;}
+ 
+  /* ---------- CTA ---------- */
+  .cta{background:var(--ink);padding:110px 0;text-align:center;position:relative;overflow:hidden;}
+  .cta-road{position:absolute;bottom:40px;left:0;right:0;height:1px;background:rgba(255,255,255,0.1);}
+  .cta h2{color:#fff;font-size:clamp(28px,4vw,42px);font-weight:700;letter-spacing:-0.02em;max-width:600px;margin:0 auto 18px;position:relative;z-index:2;}
+  .cta p{color:rgba(255,255,255,0.6);font-size:16px;max-width:460px;margin:0 auto 34px;position:relative;z-index:2;}
+  .cta-ctas{display:flex;gap:16px;justify-content:center;position:relative;z-index:2;}
+ 
+  /* ---------- FOOTER ---------- */
+  footer{background:var(--ink);border-top:1px solid rgba(255,255,255,0.08);padding:44px 0 0;}
+  footer .wrap{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;}
+  footer .foot-links{display:flex;gap:28px;}
+  footer .foot-links a{font-size:13.5px;color:rgba(255,255,255,0.55);}
+  footer .foot-links a:hover{color:#fff;}
+  .social{display:flex;gap:16px;}
+  .social a{width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;transition:border-color .2s, background .2s, transform .2s;}
+  .social a:hover{border-color:var(--teal-bright);background:rgba(63,217,190,0.1);transform:translateY(-2px);}
+  footer .copyright{font-size:12.5px;color:rgba(255,255,255,0.35);padding:28px 0;}
+  .foot-marquee{margin-top:36px;}
+ 
+  @media (max-width:860px){
+    nav.links{display:none;}
+    .stats .wrap{grid-template-columns:1fr;gap:36px;}
+    .product-row{grid-template-columns:1fr;gap:32px;}
+    .product-row.reverse .art{order:1;}
+    .product-row.reverse .copy{order:2;}
+    .flow-steps{grid-template-columns:1fr;gap:40px;padding:0;}
+    .flow-path{display:none;}
+    .cta-ctas{flex-direction:column;align-items:center;}
+    footer .wrap{flex-direction:column;align-items:flex-start;}
+    .float-badge{display:none;}
+    .logo-row{gap:28px;}
+  }
+</style>
+</head>
+<body>
+ 
+<header id="siteHeader">
+  <div class="wrap">
+    <div class="wordmark">kt<span>telematics</span></div>
+    <nav class="links">
+      <a href="#products">Products</a>
+      <a href="#convoy">Fleet</a>
+      <a href="#how">How it works</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a href="#contact" class="btn btn-ghost">Sign in</a>
+  </div>
+</header>
+ 
+<section class="hero">
+  <div class="hero-bg-shape shape-1"></div>
+  <div class="hero-bg-shape shape-2"></div>
+ 
+  <div class="float-badge badge-a" id="badge-a">
+    <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#22B8A0"/><path d="M4.5 8.2L6.8 10.5L11.5 5.5" stroke="white" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+    Geofence alert cleared
+  </div>
+  <div class="float-badge badge-b" id="badge-b">
+    <svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="none" stroke="#F2A93B" stroke-width="1.6"/><path d="M8 4.5V8L10.3 9.6" stroke="#F2A93B" stroke-width="1.6" stroke-linecap="round"/></svg>
+    Tyre pressure normal · 32 PSI
+  </div>
+  <div class="float-badge badge-c" id="badge-c">
+    <svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 2C5.2 2 3 4.2 3 7c0 4 5 7 5 7s5-3 5-7c0-2.8-2.2-5-5-5Z" fill="#3FD9BE"/></svg>
+    412 vehicles online
+  </div>
+ 
+  <div class="wrap">
+    <div class="hero-tag"><span class="dot"></span>LIVE ACROSS 12,000+ VEHICLES</div>
+    <h1 id="hero-h1">
+      <span class="line"><span>Track every vehicle.</span></span>
+      <span class="line"><span>Sense every tyre.</span></span>
+    </h1>
+    <p class="sub" id="hero-sub">One platform for fleet location, driver behaviour and real-time tyre pressure — built for operators who can't afford blind spots.</p>
+    <div class="hero-ctas" id="hero-ctas">
+      <a href="#contact" class="btn btn-solid">Talk to sales</a>
+      <a href="#products" class="btn btn-ghost">See the platform</a>
+    </div>
+  </div>
+ 
+  <div class="road-stage wrap">
+    <div class="road-line"></div>
+    <div class="road-dashes" id="road-dashes"></div>
+ 
+    <!-- faint background vehicles for depth -->
+    <svg class="bg-vehicle" id="bgVan" style="left:12%;" width="90" height="46" viewBox="0 0 90 46">
+      <rect x="4" y="10" width="66" height="26" rx="5" fill="#3FD9BE"/>
+      <path d="M70 16H82L86 26V36H70V16Z" fill="#3FD9BE"/>
+      <circle cx="20" cy="38" r="7" fill="#0B1F2A"/>
+      <circle cx="72" cy="38" r="7" fill="#0B1F2A"/>
+    </svg>
+    <svg class="bg-vehicle" id="bgCar" style="left:55%;" width="70" height="34" viewBox="0 0 70 34">
+      <path d="M4 24C4 24 8 12 20 10H50C60 10 66 18 66 24V26H4V24Z" fill="#3FD9BE"/>
+      <path d="M22 10L27 2H45L52 10Z" fill="#0B1F2A" opacity="0.3"/>
+      <circle cx="18" cy="27" r="6" fill="#0B1F2A"/>
+      <circle cx="54" cy="27" r="6" fill="#0B1F2A"/>
+    </svg>
+ 
+    <!-- main hero truck -->
+    <svg id="truck" viewBox="0 0 230 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="20" width="150" height="58" rx="4" fill="#173B4C"/>
+      <rect x="0" y="20" width="150" height="10" rx="3" fill="#1F4B60"/>
+      <line x1="30" y1="20" x2="30" y2="78" stroke="#0B1F2A" stroke-width="1.5" opacity="0.4"/>
+      <line x1="60" y1="20" x2="60" y2="78" stroke="#0B1F2A" stroke-width="1.5" opacity="0.4"/>
+      <line x1="90" y1="20" x2="90" y2="78" stroke="#0B1F2A" stroke-width="1.5" opacity="0.4"/>
+      <line x1="120" y1="20" x2="120" y2="78" stroke="#0B1F2A" stroke-width="1.5" opacity="0.4"/>
+      <path d="M150 78V38C150 35 152 33 155 33H178L200 52V78H150Z" fill="#22B8A0"/>
+      <path d="M178 33L200 52H181C179 52 178 50.5 178 49V33Z" fill="#0B1F2A" opacity="0.25"/>
+      <rect x="152" y="58" width="46" height="4" fill="#0E2530" opacity="0.3"/>
+      <rect x="198" y="68" width="8" height="10" rx="2" fill="#0E2530"/>
+      <circle id="truck-pulse" cx="75" cy="10" r="4" fill="#3FD9BE"/>
+      <g class="wheel" id="wheel1" transform="translate(35,90)">
+        <circle r="15" fill="#0E2530"/><circle r="6.5" fill="#3FD9BE" opacity="0.85"/>
+        <line x1="-11" y1="0" x2="11" y2="0" stroke="#0E2530" stroke-width="3"/>
+        <line x1="0" y1="-11" x2="0" y2="11" stroke="#0E2530" stroke-width="3"/>
+      </g>
+      <g class="wheel" id="wheel2" transform="translate(105,90)">
+        <circle r="15" fill="#0E2530"/><circle r="6.5" fill="#3FD9BE" opacity="0.85"/>
+        <line x1="-11" y1="0" x2="11" y2="0" stroke="#0E2530" stroke-width="3"/>
+        <line x1="0" y1="-11" x2="0" y2="11" stroke="#0E2530" stroke-width="3"/>
+      </g>
+      <g class="wheel" id="wheel3" transform="translate(178,90)">
+        <circle r="15" fill="#0E2530"/><circle r="6.5" fill="#3FD9BE" opacity="0.85"/>
+        <line x1="-11" y1="0" x2="11" y2="0" stroke="#0E2530" stroke-width="3"/>
+        <line x1="0" y1="-11" x2="0" y2="11" stroke="#0E2530" stroke-width="3"/>
+      </g>
+    </svg>
+  </div>
+</section>
+ 
+<!-- MARQUEE TICKER -->
+<div class="marquee">
+  <div class="marquee-track" id="marquee1">
+    <!-- content duplicated by JS for seamless loop -->
+    <div class="marquee-set" style="display:flex;">
+      <div class="marquee-item"><svg width="18" height="14" viewBox="0 0 24 16"><rect x="1" y="3" width="15" height="9" rx="2" fill="#3FD9BE"/><path d="M16 6H21L23 10V12H16V6Z" fill="#3FD9BE"/><circle cx="6" cy="13" r="2.4" fill="#0B1F2A"/><circle cx="19" cy="13" r="2.4" fill="#0B1F2A"/></svg>Real-time GPS tracking<span class="sep"></span></div>
+      <div class="marquee-item"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="none" stroke="#3FD9BE" stroke-width="1.6"/><circle cx="8" cy="8" r="2.4" fill="#3FD9BE"/></svg>Live tyre pressure monitoring<span class="sep"></span></div>
+      <div class="marquee-item"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M2 12L6 4H10L14 12" stroke="#3FD9BE" stroke-width="1.6" fill="none" stroke-linejoin="round"/><path d="M2 12H14" stroke="#3FD9BE" stroke-width="1.6"/></svg>Route &amp; geofence alerts<span class="sep"></span></div>
+      <div class="marquee-item"><svg width="16" height="16" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="1.5" fill="none" stroke="#3FD9BE" stroke-width="1.6"/><path d="M5 7L7 9L11 5" stroke="#3FD9BE" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>Preventive maintenance<span class="sep"></span></div>
+      <div class="marquee-item"><svg width="16" height="16" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="2" fill="none" stroke="#3FD9BE" stroke-width="1.6"/><path d="M5 8H11M8 5V11" stroke="#3FD9BE" stroke-width="1.6" stroke-linecap="round"/></svg>Fleet analytics &amp; reports<span class="sep"></span></div>
+    </div>
+  </div>
+</div>
+ 
+<section class="stats">
+  <div class="wrap">
+    <div class="stat-card">
+      <svg class="stat-gauge" viewBox="0 0 74 74">
+        <circle cx="37" cy="37" r="30" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="6"/>
+        <circle id="gauge1" cx="37" cy="37" r="30" fill="none" stroke="#22B8A0" stroke-width="6" stroke-linecap="round" transform="rotate(-90 37 37)" stroke-dasharray="188.5" stroke-dashoffset="188.5"/>
+      </svg>
+      <div class="stat-num" data-count="12400">0</div>
+      <div class="stat-label">Vehicles tracked daily</div>
+    </div>
+    <div class="stat-card">
+      <svg class="stat-gauge" viewBox="0 0 74 74">
+        <circle cx="37" cy="37" r="30" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="6"/>
+        <circle id="gauge2" cx="37" cy="37" r="30" fill="none" stroke="#3FD9BE" stroke-width="6" stroke-linecap="round" transform="rotate(-90 37 37)" stroke-dasharray="188.5" stroke-dashoffset="188.5"/>
+      </svg>
+      <div class="stat-num" data-count="48000">0</div>
+      <div class="stat-label">Tyres monitored live</div>
+    </div>
+    <div class="stat-card">
+      <svg class="stat-gauge" viewBox="0 0 74 74">
+        <circle cx="37" cy="37" r="30" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="6"/>
+        <circle id="gauge3" cx="37" cy="37" r="30" fill="none" stroke="#F2A93B" stroke-width="6" stroke-linecap="round" transform="rotate(-90 37 37)" stroke-dasharray="188.5" stroke-dashoffset="188.5"/>
+      </svg>
+      <div class="stat-num" data-count="99.9" data-decimal="1">0</div>
+      <div class="stat-label">Platform uptime %</div>
+    </div>
+  </div>
+</section>
+ 
+<!-- CONVOY PINNED SCENE -->
+<section class="convoy-pin" id="convoy">
+  <div class="convoy-inner">
+    <div class="convoy-heading">
+      <div class="wrap" style="position:relative;height:80px;">
+        <div class="convoy-word" id="cw1">Trucks.</div>
+        <div class="convoy-word" id="cw2">Lorries.</div>
+        <div class="convoy-word" id="cw3">Delivery vans.</div>
+        <div class="convoy-word" id="cw4">Every vehicle, <span>one dashboard.</span></div>
+      </div>
+    </div>
+ 
+    <div class="convoy-road"></div>
+    <div class="convoy-dashes"></div>
+ 
+    <!-- far layer: small car + van silhouettes -->
+    <svg class="convoy-layer layer-far" id="farCar" style="left:10%;" width="60" height="30" viewBox="0 0 70 34">
+      <path d="M4 24C4 24 8 12 20 10H50C60 10 66 18 66 24V26H4V24Z" fill="#3FD9BE"/>
+      <circle cx="18" cy="27" r="6" fill="#0B1F2A"/><circle cx="54" cy="27" r="6" fill="#0B1F2A"/>
+    </svg>
+    <svg class="convoy-layer layer-far" id="farVan" style="left:70%;" width="80" height="40" viewBox="0 0 90 46">
+      <rect x="4" y="10" width="66" height="26" rx="5" fill="#3FD9BE"/>
+      <path d="M70 16H82L86 26V36H70V16Z" fill="#3FD9BE"/>
+      <circle cx="20" cy="38" r="7" fill="#0B1F2A"/><circle cx="72" cy="38" r="7" fill="#0B1F2A"/>
+    </svg>
+ 
+    <!-- mid layer: van -->
+    <svg class="convoy-layer layer-mid" id="midVan" style="left:-10%;" width="150" height="80" viewBox="0 0 150 80">
+      <rect x="8" y="18" width="110" height="48" rx="8" fill="#1F4B60"/>
+      <rect x="8" y="18" width="110" height="14" rx="6" fill="#28607A"/>
+      <path d="M118 28H138L146 44V66H118V28Z" fill="#22B8A0"/>
+      <rect x="122" y="34" width="14" height="12" rx="2" fill="#0B1F2A" opacity="0.4"/>
+      <g class="wheel" transform="translate(38,68)"><circle r="13" fill="#0E2530"/><circle r="5.5" fill="#3FD9BE"/></g>
+      <g class="wheel" transform="translate(120,68)"><circle r="13" fill="#0E2530"/><circle r="5.5" fill="#3FD9BE"/></g>
+    </svg>
+ 
+    <!-- near layer: big lorry (container truck) -->
+    <svg class="convoy-layer layer-near" id="nearLorry" style="left:-30%;" width="300" height="150" viewBox="0 0 300 150">
+      <rect x="10" y="30" width="200" height="90" rx="6" fill="#132C3A"/>
+      <rect x="10" y="30" width="200" height="16" rx="4" fill="#1B3B4C"/>
+      <line x1="55" y1="30" x2="55" y2="120" stroke="#0B1F2A" stroke-width="2" opacity="0.5"/>
+      <line x1="100" y1="30" x2="100" y2="120" stroke="#0B1F2A" stroke-width="2" opacity="0.5"/>
+      <line x1="145" y1="30" x2="145" y2="120" stroke="#0B1F2A" stroke-width="2" opacity="0.5"/>
+      <line x1="190" y1="30" x2="190" y2="120" stroke="#0B1F2A" stroke-width="2" opacity="0.5"/>
+      <text x="70" y="82" font-family="Sora, sans-serif" font-size="22" font-weight="800" fill="#22B8A0">KT</text>
+      <path d="M210 120V56C210 51 214 47 219 47H252L278 78V120H210Z" fill="#22B8A0"/>
+      <path d="M252 47L278 78H256C253 78 252 76 252 73V47Z" fill="#0B1F2A" opacity="0.25"/>
+      <rect x="216" y="92" width="52" height="6" fill="#0E2530" opacity="0.3"/>
+      <circle id="lorryPulse" cx="105" cy="20" r="5" fill="#3FD9BE"/>
+      <g class="wheel" transform="translate(48,128)"><circle r="19" fill="#0E2530"/><circle r="8" fill="#3FD9BE"/><line x1="-14" y1="0" x2="14" y2="0" stroke="#0E2530" stroke-width="3.5"/><line x1="0" y1="-14" x2="0" y2="14" stroke="#0E2530" stroke-width="3.5"/></g>
+      <g class="wheel" transform="translate(140,128)"><circle r="19" fill="#0E2530"/><circle r="8" fill="#3FD9BE"/><line x1="-14" y1="0" x2="14" y2="0" stroke="#0E2530" stroke-width="3.5"/><line x1="0" y1="-14" x2="0" y2="14" stroke="#0E2530" stroke-width="3.5"/></g>
+      <g class="wheel" transform="translate(232,128)"><circle r="19" fill="#0E2530"/><circle r="8" fill="#3FD9BE"/><line x1="-14" y1="0" x2="14" y2="0" stroke="#0E2530" stroke-width="3.5"/><line x1="0" y1="-14" x2="0" y2="14" stroke="#0E2530" stroke-width="3.5"/></g>
+    </svg>
+ 
+    <div class="convoy-caption">Scroll — the fleet keeps moving</div>
+  </div>
+</section>
+ 
+<section class="products" id="products">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">PRODUCTS</div>
+      <h2>Two systems. One live picture of your fleet.</h2>
+      <p>AssetTracker watches where your vehicles go. Tyre Tracker watches what's happening under them. Together, nothing slips through unnoticed.</p>
+    </div>
+ 
+    <div class="product-row">
+      <div class="copy">
+        <div class="product-eyebrow"><span class="chip">AssetTracker</span></div>
+        <h3>Know where every vehicle is, always.</h3>
+        <p>Live GPS location, geofencing and route history for your entire fleet, with alerts the moment something goes off-plan.</p>
+        <ul class="feature-list">
+          <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#22B8A0"/><path d="M4.5 8.2L6.8 10.5L11.5 5.5" stroke="white" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>Real-time GPS tracking &amp; geofencing</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#22B8A0"/><path d="M4.5 8.2L6.8 10.5L11.5 5.5" stroke="white" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>Driver behaviour &amp; trip history</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#22B8A0"/><path d="M4.5 8.2L6.8 10.5L11.5 5.5" stroke="white" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>Multi-account &amp; role-based access</li>
+        </ul>
+      </div>
+      <div class="art" id="art-asset">
+        <div class="art-inner">
+          <div class="minimap-grid"></div>
+          <svg width="100%" height="100%" viewBox="0 0 400 380" style="position:absolute;inset:0;">
+            <path id="routePath" d="M40 300 C 100 320, 130 200, 200 190 S 320 100, 360 60" fill="none" stroke="#22B8A0" stroke-width="2.5" stroke-dasharray="6 8" opacity="0.6"/>
+            <circle id="routeDot" r="7" fill="#3FD9BE"/>
+          </svg>
+          <div class="pin" style="top:80%;left:12%;">
+            <svg width="26" height="30" viewBox="0 0 26 30"><path d="M13 0C6 0 1 5.5 1 12c0 9 12 18 12 18s12-9 12-18C25 5.5 20 0 13 0Z" fill="#0B1F2A"/><circle cx="13" cy="12" r="5" fill="#3FD9BE"/></svg>
+          </div>
+          <div class="pin" style="top:16%;left:90%;">
+            <svg width="26" height="30" viewBox="0 0 26 30"><path d="M13 0C6 0 1 5.5 1 12c0 9 12 18 12 18s12-9 12-18C25 5.5 20 0 13 0Z" fill="#0B1F2A"/><circle cx="13" cy="12" r="5" fill="#F2A93B"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="product-row reverse">
+      <div class="copy">
+        <div class="product-eyebrow"><span class="chip">Tyre Tracker · TPMS</span></div>
+        <h3>Catch tyre trouble before it costs you.</h3>
+        <p>Continuous pressure and temperature monitoring on every wheel, so wear and blowouts get flagged long before they become breakdowns.</p>
+        <ul class="feature-list">
+          <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#22B8A0"/><path d="M4.5 8.2L6.8 10.5L11.5 5.5" stroke="white" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>Realtime pressure &amp; temperature monitoring</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#22B8A0"/><path d="M4.5 8.2L6.8 10.5L11.5 5.5" stroke="white" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>Preventive maintenance scheduling</li>
+          <li><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#22B8A0"/><path d="M4.5 8.2L6.8 10.5L11.5 5.5" stroke="white" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>RFID tagging &amp; performance reports</li>
+        </ul>
+      </div>
+      <div class="art dark" id="art-tyre">
+        <div class="art-inner" style="display:flex;align-items:center;justify-content:center;gap:26px;">
+          <svg width="150" height="150" viewBox="0 0 180 180">
+            <g id="tyre-spin" transform-origin="90 90">
+              <circle cx="90" cy="90" r="62" fill="none" stroke="#22B8A0" stroke-width="10"/>
+              <circle cx="90" cy="90" r="62" fill="none" stroke="#3FD9BE" stroke-width="2" stroke-dasharray="4 10"/>
+            </g>
+            <circle cx="90" cy="90" r="34" fill="#132C3A" stroke="#3FD9BE" stroke-width="1.5"/>
+            <circle cx="90" cy="90" r="5" fill="#F2A93B"/>
+          </svg>
+          <div class="gauge-wrap">
+            <svg width="90" height="60" viewBox="0 0 90 50">
+              <path d="M6 46A39 39 0 0 1 84 46" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="7"/>
+              <path id="pressureArc" d="M6 46A39 39 0 0 1 84 46" fill="none" stroke="#3FD9BE" stroke-width="7" stroke-linecap="round" stroke-dasharray="123" stroke-dashoffset="123"/>
+              <line id="needle" x1="45" y1="46" x2="45" y2="16" stroke="#F2A93B" stroke-width="2.5" stroke-linecap="round" transform-origin="45px 46px" transform="rotate(-90)"/>
+            </svg>
+            <div class="gauge-value">32 PSI</div>
+            <div class="gauge-caption">Front-left, live</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<section class="flow" id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="kicker">HOW IT WORKS</div>
+      <h2>From the road to your dashboard, in seconds.</h2>
+      <p>The same data pipeline runs behind both products — sensors on the vehicle, a live stream to the cloud, and a dashboard that never goes stale.</p>
+    </div>
+    <div class="flow-track">
+      <div class="flow-path"><div class="fill" id="flow-fill"></div></div>
+      <svg class="flow-vehicle" id="flow-vehicle" viewBox="0 0 90 46" width="34">
+        <rect x="4" y="10" width="66" height="26" rx="5" fill="#22B8A0"/>
+        <path d="M70 16H82L86 26V36H70V16Z" fill="#22B8A0"/>
+        <circle cx="20" cy="38" r="7" fill="#0B1F2A"/>
+        <circle cx="72" cy="38" r="7" fill="#0B1F2A"/>
+      </svg>
+      <div class="flow-steps">
+        <div class="flow-step" id="step1">
+          <div class="node">
+            <svg width="22" height="22" viewBox="0 0 22 22"><circle cx="11" cy="11" r="9" fill="none" stroke="#22B8A0" stroke-width="1.6"/><circle cx="11" cy="11" r="3" fill="#22B8A0"/></svg>
+          </div>
+          <h4>Sense</h4>
+          <p>GPS and tyre sensors capture location, pressure and temperature continuously.</p>
+        </div>
+        <div class="flow-step" id="step2">
+          <div class="node">
+            <svg width="22" height="22" viewBox="0 0 22 22"><path d="M4 14C4 8 8 4 14 4M14 4L10 4M14 4L14 8" stroke="#22B8A0" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M18 8C18 14 14 18 8 18M8 18L12 18M8 18L8 14" stroke="#22B8A0" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>
+          </div>
+          <h4>Stream</h4>
+          <p>Readings move to the cloud in real time over a secure connection.</p>
+        </div>
+        <div class="flow-step" id="step3">
+          <div class="node">
+            <svg width="22" height="22" viewBox="0 0 22 22"><rect x="3" y="4" width="16" height="11" rx="1.5" fill="none" stroke="#22B8A0" stroke-width="1.6"/><line x1="8" y1="18" x2="14" y2="18" stroke="#22B8A0" stroke-width="1.6"/></svg>
+          </div>
+          <h4>See</h4>
+          <p>Fleet managers get live maps, alerts and reports on any device.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+ 
+<section class="trusted">
+  <div class="wrap">
+    <div class="kicker">TRUSTED BY FLEET OPERATORS ACROSS</div>
+    <div class="logo-row">
+      <span>Chennai</span><span>Bengaluru</span><span>Hyderabad</span><span>Mumbai</span><span>Delhi NCR</span><span>Pune</span>
+    </div>
+  </div>
+</section>
+ 
+<section class="cta" id="contact">
+  <div class="cta-road"></div>
+  <div class="wrap">
+    <h2>Ready to see your whole fleet in one place?</h2>
+    <p>Set up a walkthrough with our team, or sign in if you're already a kt telematics customer.</p>
+    <div class="cta-ctas">
+      <a href="#" class="btn btn-solid">Talk to sales</a>
+      <a href="#" class="btn btn-ghost">Sign in</a>
+    </div>
+  </div>
+</section>
+ 
+<footer>
+  <div class="wrap">
+    <div class="wordmark">kt<span>telematics</span></div>
+    <div class="foot-links">
+      <a href="#products">Products</a>
+      <a href="#how">How it works</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <div class="social">
+      <a href="#" aria-label="Facebook"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M15 8.5H17V5.5H15C12.79 5.5 11 7.29 11 9.5V11.5H9V14.5H11V20.5H14V14.5H16.5L17 11.5H14V9.5C14 8.95 14.45 8.5 15 8.5Z" fill="#fff"/></svg></a>
+      <a href="#" aria-label="Instagram"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="#fff" stroke-width="1.6"/><circle cx="12" cy="12" r="4" stroke="#fff" stroke-width="1.6"/><circle cx="17.2" cy="6.8" r="1" fill="#fff"/></svg></a>
+      <a href="#" aria-label="LinkedIn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="#fff" stroke-width="1.6"/><line x1="7.5" y1="10" x2="7.5" y2="17" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><circle cx="7.5" cy="7" r="1" fill="#fff"/><path d="M11.5 17V10M11.5 13C11.5 11 13 10 14.5 10C16 10 16.5 11 16.5 13V17" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg></a>
+      <a href="#" aria-label="YouTube"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="6" width="18" height="12" rx="4" stroke="#fff" stroke-width="1.6"/><path d="M10.5 9.5L15 12L10.5 14.5V9.5Z" fill="#fff"/></svg></a>
+    </div>
+  </div>
+  <div class="marquee foot-marquee" style="background:transparent;border:none;">
+    <div class="marquee-track" id="marquee2">
+      <div class="marquee-set" style="display:flex;">
+        <div class="marquee-item"><svg width="18" height="14" viewBox="0 0 24 16"><rect x="1" y="3" width="15" height="9" rx="2" fill="#1F4B60"/><path d="M16 6H21L23 10V12H16V6Z" fill="#1F4B60"/><circle cx="6" cy="13" r="2.4" fill="#0B1F2A"/><circle cx="19" cy="13" r="2.4" fill="#0B1F2A"/></svg>kt telematics<span class="sep"></span></div>
+        <div class="marquee-item">Fleet visibility<span class="sep"></span></div>
+        <div class="marquee-item">Tyre intelligence<span class="sep"></span></div>
+        <div class="marquee-item">Built for the road<span class="sep"></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="wrap"><div class="copyright">© 2026 kt telematics. All rights reserved.</div></div>
+</footer>
+ 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ 
+/* split hero headline into words */
+document.querySelectorAll('#hero-h1 .line span').forEach(el=>{
+  const words = el.textContent.split(' ');
+  el.innerHTML = words.map(w=>`<span class="word" style="display:inline-block;">${w}&nbsp;</span>`).join('');
+});
+ 
+/* duplicate marquee content for seamless infinite loop */
+['marquee1','marquee2'].forEach(id=>{
+  const track = document.getElementById(id);
+  track.innerHTML += track.innerHTML;
+});
+ 
+/* header solidify on scroll */
+const header = document.getElementById('siteHeader');
+window.addEventListener('scroll', ()=> header.classList.toggle('solid', window.scrollY > 40));
+ 
+if(!reduced){
+ 
+  /* ---- HERO LOAD TIMELINE ---- */
+  const tl = gsap.timeline({defaults:{ease:'power3.out'}});
+  tl.set('.word', {yPercent:120, opacity:0})
+    .set('#hero-sub, #hero-ctas', {opacity:0, y:16})
+    .set('.road-line, .road-dashes', {opacity:0})
+    .set('.float-badge', {opacity:0, y:10})
+    .set('#bgVan, #bgCar', {opacity:0})
+ 
+    .to('#truck', {x: () => (document.querySelector('.road-stage').offsetWidth/2) + 40, duration:1.7, ease:'power2.out'}, 0)
+    .to('.road-line, .road-dashes', {opacity:1, duration:0.6}, 0)
+    .to(['#wheel1','#wheel2','#wheel3'], {rotation:520, transformOrigin:'center', duration:1.7, ease:'power2.out'}, 0)
+    .fromTo('#truck-pulse', {scale:0.6, opacity:0.4}, {scale:1.6, opacity:0, duration:1, repeat:2, ease:'sine.out'}, 0.3)
+    .to('#bgVan', {opacity:0.16, x:40, duration:1.4}, 0.2)
+    .to('#bgCar', {opacity:0.16, x:-30, duration:1.4}, 0.4)
+ 
+    .to('.word', {yPercent:0, opacity:1, duration:0.7, stagger:0.045}, 0.9)
+    .to('#hero-sub', {opacity:1, y:0, duration:0.6}, 1.35)
+    .to('#hero-ctas', {opacity:1, y:0, duration:0.6}, 1.5)
+    .to('.float-badge', {opacity:1, y:0, duration:0.6, stagger:0.15}, 1.7);
+ 
+  // idle wheel roll + background vehicle drift after arrival
+  gsap.to(['#wheel1','#wheel2','#wheel3'], {rotation:'+=360', duration:6, ease:'none', repeat:-1, delay:1.9});
+  gsap.to('#bgVan', {x:'+=60', duration:9, ease:'sine.inOut', yoyo:true, repeat:-1, delay:2});
+  gsap.to('#bgCar', {x:'-=50', duration:7, ease:'sine.inOut', yoyo:true, repeat:-1, delay:2});
+  gsap.to('.road-dashes', {backgroundPositionX:'-160px', duration:3, ease:'none', repeat:-1});
+ 
+  // floating badges gently bob
+  gsap.to('#badge-a', {y:'+=10', duration:3.2, ease:'sine.inOut', yoyo:true, repeat:-1, delay:2.2});
+  gsap.to('#badge-b', {y:'-=8', duration:2.6, ease:'sine.inOut', yoyo:true, repeat:-1, delay:2.5});
+  gsap.to('#badge-c', {y:'+=8', duration:3.6, ease:'sine.inOut', yoyo:true, repeat:-1, delay:2.8});
+ 
+  // mouse parallax on hero shapes
+  document.querySelector('.hero').addEventListener('mousemove', (e)=>{
+    const x = (e.clientX / window.innerWidth - 0.5);
+    const y = (e.clientY / window.innerHeight - 0.5);
+    gsap.to('.shape-1', {x: x*40, y: y*30, duration:1, ease:'power2.out'});
+    gsap.to('.shape-2', {x: -x*30, y: -y*20, duration:1, ease:'power2.out'});
+  });
+ 
+  /* ---- MARQUEE INFINITE SCROLL ---- */
+  document.querySelectorAll('.marquee-track').forEach(track=>{
+    const width = track.scrollWidth / 2;
+    gsap.to(track, {x: -width, duration: width/40, ease:'none', repeat:-1});
+  });
+ 
+  /* ---- STAT COUNTERS + GAUGE RINGS ---- */
+  document.querySelectorAll('.stat-card').forEach((card,i)=>{
+    const el = card.querySelector('.stat-num');
+    const gauge = card.querySelector('circle[id^="gauge"]');
+    const end = parseFloat(el.dataset.count);
+    const decimals = parseInt(el.dataset.decimal || '0');
+    let obj = {val:0};
+    ScrollTrigger.create({
+      trigger: card, start:'top 85%', once:true,
+      onEnter:()=>{
+        gsap.to(obj, {
+          val:end, duration:1.6, ease:'power2.out',
+          onUpdate:()=> el.textContent = decimals ? obj.val.toFixed(decimals) : Math.round(obj.val).toLocaleString()
+        });
+        gsap.to(gauge, {strokeDashoffset: 188.5 * (1 - 0.8), duration:1.6, ease:'power2.out'});
+      }
+    });
+  });
+ 
+  /* ---- CONVOY PINNED SCENE ---- */
+  const convoyTl = gsap.timeline({
+    scrollTrigger:{
+      trigger:'.convoy-pin', start:'top top', end:'+=2200', scrub:0.6, pin:true
+    }
+  });
+  gsap.set(['#cw1','#cw2','#cw3','#cw4'], {opacity:0, y:20});
+  gsap.set('#cw1', {opacity:1, y:0});
+ 
+  convoyTl
+    .to('#farCar', {left:'115%', duration:3, ease:'none'}, 0)
+    .to('#farVan', {left:'-15%', duration:3.4, ease:'none'}, 0)
+    .to('#midVan', {left:'115%', duration:2.6, ease:'none'}, 0)
+    .to('#nearLorry', {left:'115%', duration:2.2, ease:'none'}, 0)
+    // heading crossfades as the convoy passes
+    .to('#cw1', {opacity:0, y:-20, duration:0.4}, 0.35)
+    .to('#cw2', {opacity:1, y:0, duration:0.4}, 0.35)
+    .to('#cw2', {opacity:0, y:-20, duration:0.4}, 0.62)
+    .to('#cw3', {opacity:1, y:0, duration:0.4}, 0.62)
+    .to('#cw3', {opacity:0, y:-20, duration:0.4}, 0.85)
+    .to('#cw4', {opacity:1, y:0, duration:0.4}, 0.85)
+    .to(['#nearLorry .wheel', '#midVan .wheel'], {rotation:'+=900', transformOrigin:'center', duration:2.6, ease:'none'}, 0);
+ 
+  /* ---- PRODUCT PANELS ---- */
+  gsap.utils.toArray('.product-row').forEach(row=>{
+    gsap.from(row.querySelector('.copy'), {opacity:0, y:24, duration:0.8, ease:'power2.out', scrollTrigger:{trigger:row, start:'top 78%'}});
+    gsap.from(row.querySelector('.art'), {opacity:0, y:24, duration:0.8, delay:0.1, ease:'power2.out', scrollTrigger:{trigger:row, start:'top 78%'}});
+  });
+ 
+  // animated route dot travelling the map path in AssetTracker art
+  const routePath = document.getElementById('routePath');
+  const routeDot = document.getElementById('routeDot');
+  const pathLen = routePath.getTotalLength();
+  gsap.to({}, {
+    duration:5, repeat:-1, ease:'sine.inOut',
+    onUpdate: function(){
+      const p = this.progress();
+      const pt = routePath.getPointAtLength(p * pathLen);
+      routeDot.setAttribute('cx', pt.x); routeDot.setAttribute('cy', pt.y);
+    }
+  });
+  gsap.to('.pin', {y:'-=6', duration:1.6, ease:'sine.inOut', yoyo:true, repeat:-1, stagger:0.3});
+ 
+  // tyre ring spin + pressure gauge sweep
+  gsap.to('#tyre-spin', {rotation:360, transformOrigin:'90px 90px', duration:14, repeat:-1, ease:'none'});
+  ScrollTrigger.create({
+    trigger:'#art-tyre', start:'top 75%', once:true,
+    onEnter:()=>{
+      gsap.to('#pressureArc', {strokeDashoffset:123*0.28, duration:1.4, ease:'power2.out'});
+      gsap.to('#needle', {rotation:65, duration:1.4, ease:'power2.out', transformOrigin:'45px 46px'});
+    }
+  });
+ 
+  /* ---- FLOW: vehicle travels Sense -> Stream -> See ---- */
+  const flowSection = document.querySelector('.flow');
+  const steps = ['#step1','#step2','#step3'];
+  ScrollTrigger.create({
+    trigger: flowSection, start:'top 60%', end:'bottom 70%', scrub:0.6,
+    onUpdate: self => {
+      const p = self.progress;
+      document.getElementById('flow-fill').style.width = (p*100)+'%';
+      const track = document.querySelector('.flow-path');
+      const w = track.offsetWidth;
+      document.getElementById('flow-vehicle').style.left = (p*w)+'px';
+      steps.forEach((s,i)=>{ document.querySelector(s).classList.toggle('active', p >= i/2 - 0.02); });
+    }
+  });
+ 
+} else {
+  document.querySelectorAll('.word').forEach(w=> w.style.opacity = 1);
+  document.getElementById('hero-sub').style.opacity = 1;
+  document.getElementById('hero-ctas').style.opacity = 1;
+  document.querySelectorAll('.float-badge').forEach(b=> b.style.opacity = 1);
+  document.querySelector('.road-line').style.opacity = 1;
+  document.querySelector('.road-dashes').style.opacity = 1;
+  document.getElementById('truck').style.left = '30%';
+  document.querySelectorAll('.stat-num').forEach(el=>{
+    const end = parseFloat(el.dataset.count);
+    const decimals = parseInt(el.dataset.decimal || '0');
+    el.textContent = decimals ? end.toFixed(decimals) : Math.round(end).toLocaleString();
+  });
+  document.querySelectorAll('circle[id^="gauge"]').forEach(g=> g.setAttribute('stroke-dashoffset', 188.5*0.2));
+  document.querySelectorAll('#cw1').forEach(w=> w.style.opacity = 1);
+}
+</script>
+</body>
+</html>
+ 
